@@ -9,6 +9,7 @@ import { parseBoolean, useStored } from '../lib/storage';
 import { useTimers } from '../lib/timers';
 import { useRecipe } from '../lib/useRecipes';
 import { speak, speechSupported, stopSpeaking, useVoiceCommands, type VoiceCommand } from '../lib/voice';
+import { isVoiceProblem, VoiceHelp } from './VoiceHelp';
 import { Amount } from './Amount';
 import { ScalePicker } from './ScalePicker';
 import { TimerTray } from './TimerTray';
@@ -41,7 +42,6 @@ function CookView({ recipe, requested }: { recipe: Recipe; requested: number }) 
   const [checked, setChecked] = useChecked(recipe.slug);
   const [, setLastStep] = useLastStep(recipe.slug);
   const [textSize, setTextSize] = useTextSize();
-  const [voiceOn, setVoiceOn] = useStored('voice.enabled', parseBoolean, false);
   const [readAloud, setReadAloud] = useStored('readAloud.enabled', parseBoolean, false);
   const [speaking, setSpeaking] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
@@ -126,14 +126,14 @@ function CookView({ recipe, requested }: { recipe: Recipe; requested: number }) 
     [next, back, say, recipe, index, scale, startStepTimer, timers, flash],
   );
 
-  const voice = useVoiceCommands({ enabled: voiceOn, paused: speaking, onCommand: onVoice });
+  const voice = useVoiceCommands({ paused: speaking, onCommand: onVoice });
+  const voiceOn = voice.status === 'listening' || voice.status === 'starting';
+  const [voiceHelpDismissed, setVoiceHelpDismissed] = useState(false);
+  const voiceProblem = isVoiceProblem(voice.status) && !voiceHelpDismissed ? voice.status : undefined;
 
   useEffect(() => {
-    if (voice.status === 'blocked') {
-      setVoiceOn(false);
-      flash('Microphone is blocked. Allow it in your browser settings to use voice.');
-    }
-  }, [voice.status, setVoiceOn, flash]);
+    if (voice.status === 'listening') flash('Listening. Say “next”, “back”, “repeat”, “start timer” or “stop”.');
+  }, [voice.status, flash]);
 
   // Keyboard: → / space / enter = next, ← = back.
   useEffect(() => {
@@ -181,9 +181,14 @@ function CookView({ recipe, requested }: { recipe: Recipe; requested: number }) 
   const nextStep = index < total ? recipe.steps[index] : undefined;
   const nextLabel = index === 0 ? 'Start step 1' : index === total ? 'Finish' : index > total ? 'Done' : 'Next';
 
+  // Called straight from the tap: phones only allow the microphone prompt during a tap.
   const toggleVoice = () => {
-    if (!voiceOn) flash('Listening. Say “next”, “back”, “repeat”, “start timer” or “stop”.');
-    setVoiceOn(!voiceOn);
+    if (voiceOn) {
+      voice.stop();
+      return;
+    }
+    setVoiceHelpDismissed(false);
+    voice.start();
   };
   const toggleReadAloud = () => {
     if (readAloud) stopSpeaking();
@@ -248,7 +253,7 @@ function CookView({ recipe, requested }: { recipe: Recipe; requested: number }) 
         ))}
       </div>
 
-      {voiceOn && voice.status === 'listening' && (
+      {voice.status === 'listening' && (
         <div className="listening">
           <span className="listening__dot" /> {speaking ? 'Reading…' : voice.lastHeard ? `Heard “${voice.lastHeard}”` : 'Listening…'}
         </div>
@@ -299,6 +304,17 @@ function CookView({ recipe, requested }: { recipe: Recipe; requested: number }) 
       </nav>
 
       {toast && <div className="toast" role="status">{toast}</div>}
+
+      {voiceProblem && (
+        <VoiceHelp
+          problem={voiceProblem}
+          onRetry={() => {
+            setVoiceHelpDismissed(false);
+            voice.start();
+          }}
+          onClose={() => setVoiceHelpDismissed(true)}
+        />
+      )}
 
       {showSteps && (
         <div className="sheet" onClick={() => setShowSteps(false)}>

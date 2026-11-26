@@ -30,6 +30,7 @@ interface SpeechRecognitionLike extends EventTarget {
   onresult: ((e: SpeechRecognitionEventLike) => void) | null;
   onerror: ((e: SpeechRecognitionErrorEventLike) => void) | null;
   onend: (() => void) | null;
+  onstart: (() => void) | null;
 }
 
 interface Window {

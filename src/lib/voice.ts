@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
  * Hands-free cook mode: listens for a few short words and turns them into
@@ -25,93 +25,141 @@ export function matchCommand(transcript: string): VoiceCommand | undefined {
 export const voiceSupported = (): boolean =>
   typeof window !== 'undefined' && Boolean(window.SpeechRecognition ?? window.webkitSpeechRecognition);
 
-export type VoiceStatus = 'off' | 'listening' | 'unsupported' | 'blocked';
+/**
+ * - `denied`: the browser refused the microphone (or the user tapped "Don't allow").
+ * - `no-service`: the microphone is allowed but the browser's speech service refuses
+ *   (iPhone: Siri & Dictation off; Edge on Android has no speech service).
+ * - `no-mic`: no microphone found.
+ * - `stopped`: it was listening, then the browser stopped it; a tap restarts it.
+ */
+export type VoiceStatus = 'off' | 'starting' | 'listening' | 'unsupported' | 'denied' | 'no-service' | 'no-mic' | 'stopped';
 
 /**
- * While `enabled`, listen continuously and call `onCommand` for each command
- * heard. Recognition stops on its own after silence, so it is restarted.
- * `paused` ignores what's heard (used while the site is reading aloud, so it
- * doesn't hear its own "next").
+ * Listen continuously and call `onCommand` for each command heard.
+ *
+ * `start()` must be called straight from a tap handler: phone browsers only
+ * show the "allow microphone?" prompt (and only let recognition start) during
+ * a user gesture. Recognition ends on its own after silence, so it is
+ * restarted from `onend`. `paused` ignores what is heard (used while the site
+ * is reading aloud, so it doesn't hear its own "next").
  */
 export function useVoiceCommands({
-  enabled,
   paused,
   onCommand,
 }: {
-  enabled: boolean;
   paused: boolean;
   onCommand: (cmd: VoiceCommand, heard: string) => void;
-}): { status: VoiceStatus; lastHeard: string } {
+}): { status: VoiceStatus; lastHeard: string; start: () => void; stop: () => void } {
   const [status, setStatus] = useState<VoiceStatus>(voiceSupported() ? 'off' : 'unsupported');
   const [lastHeard, setLastHeard] = useState('');
   const onCommandRef = useRef(onCommand);
   onCommandRef.current = onCommand;
   const pausedRef = useRef(paused);
   pausedRef.current = paused;
+  const recRef = useRef<SpeechRecognitionLike | null>(null);
 
-  useEffect(() => {
-    const Ctor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
-    if (!Ctor) {
-      setStatus('unsupported');
-      return;
+  const stop = useCallback(() => {
+    const rec = recRef.current;
+    recRef.current = null;
+    if (rec) {
+      rec.onend = null;
+      rec.onerror = null;
+      rec.abort();
     }
-    if (!enabled) {
-      setStatus('off');
-      return;
-    }
-    const rec = new Ctor();
-    rec.continuous = true;
-    rec.interimResults = true;
-    rec.lang = 'en-US';
-    rec.maxAlternatives = 1;
-    let active = true;
-    // One command per spoken phrase: interim results for a phrase share an index.
-    const handled = new Set<number>();
-    let lastFire = 0;
+  }, []);
 
-    rec.onresult = (e) => {
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        const result = e.results[i];
-        const transcript = result[0]?.transcript ?? '';
-        if (result.isFinal) setLastHeard(transcript.trim());
-        if (handled.has(i) || pausedRef.current) continue;
-        const cmd = matchCommand(transcript);
-        if (cmd && Date.now() - lastFire > 900) {
-          handled.add(i);
-          lastFire = Date.now();
-          onCommandRef.current(cmd, transcript.trim());
+  const start = useCallback(
+    function begin({ micGranted = false }: { micGranted?: boolean } = {}) {
+      const Ctor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
+      if (!Ctor) {
+        setStatus('unsupported');
+        return;
+      }
+      stop();
+      const rec = new Ctor();
+      recRef.current = rec;
+      rec.continuous = true;
+      rec.interimResults = true;
+      rec.lang = 'en-US';
+      rec.maxAlternatives = 1;
+      let started = false;
+      // One command per spoken phrase: interim results for a phrase share an index.
+      const handled = new Set<number>();
+      let lastFire = 0;
+
+      const fail = (next: VoiceStatus) => {
+        if (recRef.current !== rec) return;
+        stop();
+        setStatus(next);
+      };
+
+      rec.onstart = () => {
+        started = true;
+        setStatus('listening');
+      };
+      rec.onresult = (e) => {
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          const result = e.results[i];
+          const transcript = result[0]?.transcript ?? '';
+          if (result.isFinal) setLastHeard(transcript.trim());
+          if (handled.has(i) || pausedRef.current) continue;
+          const cmd = matchCommand(transcript);
+          if (cmd && Date.now() - lastFire > 900) {
+            handled.add(i);
+            lastFire = Date.now();
+            onCommandRef.current(cmd, transcript.trim());
+          }
         }
-      }
-    };
-    rec.onerror = (e) => {
-      if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
-        active = false;
-        setStatus('blocked');
-      }
-    };
-    rec.onend = () => {
-      handled.clear();
-      if (!active) return;
+      };
+      rec.onerror = (e) => {
+        if (e.error === 'audio-capture') return fail('no-mic');
+        if (e.error !== 'not-allowed' && e.error !== 'service-not-allowed') return;
+        if (started) return fail('stopped');
+        if (micGranted || e.error === 'service-not-allowed') return fail('no-service');
+        // Some browsers (Chrome/Edge on Android) never show a prompt for speech
+        // recognition itself. Ask for the microphone the standard way, then try
+        // once more. If the mic is allowed and recognition still refuses, the
+        // browser's speech service is the problem, not the permission.
+        if (recRef.current !== rec) return;
+        stop();
+        if (!navigator.mediaDevices?.getUserMedia) return setStatus('denied');
+        navigator.mediaDevices
+          .getUserMedia({ audio: true })
+          .then((stream) => {
+            stream.getTracks().forEach((t) => t.stop());
+            begin({ micGranted: true });
+          })
+          .catch((err: unknown) => {
+            setStatus(err instanceof DOMException && err.name === 'NotFoundError' ? 'no-mic' : 'denied');
+          });
+      };
+      rec.onend = () => {
+        handled.clear();
+        if (recRef.current !== rec) return;
+        try {
+          rec.start();
+        } catch {
+          fail('stopped');
+        }
+      };
+      setStatus('starting');
       try {
         rec.start();
       } catch {
-        // Already starting; ignore.
+        fail('denied');
       }
-    };
-    try {
-      rec.start();
-      setStatus('listening');
-    } catch {
-      setStatus('blocked');
-    }
-    return () => {
-      active = false;
-      rec.onend = null;
-      rec.abort();
-    };
-  }, [enabled]);
+    },
+    [stop],
+  );
 
-  return { status, lastHeard };
+  const off = useCallback(() => {
+    stop();
+    setStatus('off');
+  }, [stop]);
+
+  useEffect(() => stop, [stop]);
+
+  return { status, lastHeard, start, stop: off };
 }
 
 /** Read text aloud; `onEnd` fires when it finishes or fails. */

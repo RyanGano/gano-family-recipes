@@ -11,6 +11,7 @@ Family recipes, made easy to cook from a phone.
 - **Cook mode**: one big step per screen, with that step's ingredient amounts.
   - **Changing steps**: tap the big Next / Back buttons, swipe, use the arrow keys, tap the progress bar, or use the step list.
   - **Voice control (🎤)**: say "next", "back", "repeat", "ingredients", "start timer" or "stop".
+    - Works in Chrome on Android and Safari on iPhone. The first tap on 🎤 asks for the microphone. If that fails, a help panel explains how to fix it on that phone, with a Try again button. In Edge or Samsung Internet on Android, the panel offers to open the same step in Chrome.
   - **Read aloud (🔊)**: reads each step out as you reach it.
   - **Timers**: start one from a step. Timers keep running as you move between steps and survive a page reload. A range like "20–25 min" chimes at 20 to check and rings at 25. The "time's up" alert lets you add 1 or 5 more minutes.
   - **Checklists**: you can tap off things that must be added in order, such as the milk added in thirds.

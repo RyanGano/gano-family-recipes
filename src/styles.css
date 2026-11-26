@@ -1199,3 +1199,21 @@ button {
   box-shadow: var(--shadow);
   margin-top: 8px;
 }
+
+.voice-help__steps {
+  padding-left: 1.4em;
+  margin: 0 0 12px;
+  display: grid;
+  gap: 6px;
+}
+
+.voice-help__actions {
+  display: grid;
+  gap: 8px;
+}
+
+.voice-help__note {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  text-align: center;
+}
