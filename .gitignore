@@ -1,0 +1,8 @@
+node_modules
+dist
+*.local
+.claude/settings.local.json
+
+# Source documents stay local
+*.docx
+*.tsbuildinfo
