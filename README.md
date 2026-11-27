@@ -2,7 +2,7 @@
 
 Family recipes, made easy to cook from a phone.
 
-**Live site:** https://ryangano.github.io/gano-family-recipes/
+**Live site:** https://recipes.ryangano.com/
 
 ## What it does
 
@@ -30,7 +30,7 @@ The recipes live in `src/api/recipes/`. Everything else gets them through `src/a
 
 ```
 npm install
-npm run dev      # http://localhost:5173/gano-family-recipes/
+npm run dev      # http://localhost:5173/
 npm test         # recipe consistency checks + unit tests
 npm run build
 ```
