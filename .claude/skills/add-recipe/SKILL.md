@@ -1,6 +1,6 @@
 ---
 name: add-recipe
-description: Add a family recipe to the Gano recipe box site from a photo or pasted text. Clarifies gaps with the user, designs the step-by-step cook-mode breakdown (timers, checklists, temperatures), proposes it for approval, then adds the recipe and any new cook-mode features. Use when the user says "add a recipe", shares a recipe card photo, or pastes a recipe to put on the site.
+description: Add a family recipe to the Gano recipe box site from a photo or pasted text. Reads it as a brand-new cook would and asks the user what such a cook would need to know, designs the step-by-step cook-mode breakdown (timers, checklists, temperatures), proposes it for approval, then adds the recipe and any new cook-mode features. Use when the user says "add a recipe", shares a recipe card photo, or pastes a recipe to put on the site.
 ---
 
 # Add a recipe
@@ -20,17 +20,35 @@ Keep this transcript. It is the source of truth for the classic recipe card, and
 
 ## 2. Clarify
 
-List every gap. Then ask about them with `AskUserQuestion` (up to 4 questions per call, and as many calls as you need). Give each question options that carry your best guess, so the user can just tap. Look for:
+Family recipe cards are written by people who already know how to cook. The person cooking from this site may never have cooked or baked anything. Assume they know *nothing*: not what "cream the butter" means, not which pan to use, not that the oven should be hot before the pan goes in, not what "until golden" looks like.
 
-- Amounts with no number ("some milk", "a can of soup": what size?) and abbreviations that could mean two things ("T" vs "t").
-- Oven temperature, pan size, bake or cook times and doneness cues the card leaves out.
-- Yield, meaning what one batch makes. The ½×/2× scaler multiplies it.
-- Who the recipe is from, a line of family story if there is one, and a category (the `Category` union in `types.ts`).
+### Read it as a brand-new cook
+
+Go through the transcript line by line, ingredient list included, and write down every question that cook would ask before or while following it. Don't skip a question because the answer seems obvious to you. Check each line for:
+
+- **Ingredients.** Which kind: salted or unsalted butter, all-purpose or bread flour, large eggs, light or dark brown sugar? What state: softened, melted, cold, room temperature, and how do you get it there? How to measure: packed or loose, sifted or scooped, level or heaping? What size is "a can" or "a package"? What do the abbreviations mean ("T" vs "t", "c", "oz", "pkg")?
+- **Equipment.** Pan size, shape and material. Greased, floured, lined with parchment, or none? Which bowl, a hand or stand mixer, or a spoon? Any tool a beginner may not own or know by name (a pastry blender, a double boiler, a candy thermometer)?
+- **Order and timing.** What has to happen first: preheat the oven, soften butter an hour ahead, thaw something? Which steps can pause and which can't? What is the cook doing during a rest or a rise?
+- **Technique.** Every verb that is a skill: cream, fold, knead, beat until stiff peaks, cut in, whisk, simmer vs boil, punch down. By hand or mixer, at what speed, for how long, and what it looks like when it's done right.
+- **Heat.** Oven temperature and rack position. Stove setting as low, medium or high. How to tell the pan or oil is hot enough.
+- **Doneness.** How to tell it's done, how to check (toothpick, thermometer, a jiggle, a color), and what under- or over-done looks like.
+- **Afterward.** Cool in the pan or out of it, and for how long. When it can be cut or served. How to store it and how long it keeps.
+- **The basics for the site.** Yield, meaning what one batch makes (the ½×/2× scaler multiplies it). Who the recipe is from, a line of family story if there is one, and a category (the `Category` union in `types.ts`).
 - Anything illegible from stage 1.
+
+### Sort the questions
+
+For each question, decide where the answer comes from:
+
+- **The card answers it.** Note where, and move on.
+- **Only the family knows, or you would be guessing.** Which pan Grandma used, how dark she let them get, whether the "can of soup" is the small can, whether a step matters or is habit. Ask the user.
+- **General cooking knowledge with one right answer** (what "fold" means, how to soften butter). Don't make the user teach it. Answer it yourself in the recipe, as a `glossary` term, in the step text, or as a `tip`, and list it in the stage 4 proposal so the user can correct it.
+
+Ask with `AskUserQuestion` (up to 4 questions per call, and as many calls as you need). Phrase each the way the new cook would ask it ("Should the butter be soft or cold when it goes in?"), and give options that carry your best guess, so the user can just tap.
 
 A gap the user can't fill stays out of the recipe or becomes a `tip` worded as a suggestion ("Most versions bake about 30 min; check at 25"). Never present invented facts as the family's recipe. Tips and step text say what to do, never what the card leaves out: write "Start with about 1 cup powdered sugar", not "The card gives no amounts."
 
-**Done when** every gap on your list has an answer, or the user has said to leave it out.
+**Done when** every new-cook question on your list has an answer (from the card, the user, or general cooking knowledge) or the user has said to leave it out.
 
 ## 3. Design the cook-mode breakdown
 
@@ -64,7 +82,7 @@ Shape the steps like this:
 
 Then look for a **new feature**: a signal in this recipe that no catalog row covers and that would help someone cooking from a phone. Examples are a rise or rest stage measured in hours, a "repeat for each layer" loop, a candy-thermometer target, or a step that needs a photo. Sketch each candidate as a data field plus what it looks like in cook mode. Only propose one if this recipe actually uses it.
 
-**Done when** every sentence of the transcript maps to a screen, every ingredient is used on at least one screen, and every catalog signal in the recipe has its feature.
+**Done when** every sentence of the transcript maps to a screen, every ingredient is used on at least one screen, every catalog signal in the recipe has its feature, and every new-cook question from stage 2 is answered on the screen, tip, glossary term or gather screen where the cook would be asking it.
 
 ## 4. Propose, and wait for approval
 
@@ -73,7 +91,8 @@ Show the user:
 1. A table of the screens: number, section, title, ingredients with amounts, and features (timer, checklist, temperature, while-you-wait, tip).
 2. Any reordering compared with the original card, and why.
 3. Any new features, each as one line on what it does and one line on how it looks on the phone.
-4. The metadata: title, slug, from, category, yield, and prep and cook minutes.
+4. The new-cook questions you answered from general cooking knowledge, each with the answer you used and where it appears (step, tip or glossary), so the user can correct any that don't match how the family does it.
+5. The metadata: title, slug, from, category, yield, and prep and cook minutes.
 
 Then ask with `AskUserQuestion`: approve, or change something. Loop on their changes.
 
