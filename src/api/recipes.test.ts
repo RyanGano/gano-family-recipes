@@ -19,6 +19,7 @@ import { cinnamonRolls } from './recipes/cinnamon-rolls';
 import { forSpeech } from '../lib/speech';
 import { breakfastPuffs } from './recipes/breakfast-puffs';
 import { orangeTwists } from './recipes/orange-twists';
+import { creamCheeseMints } from './recipes/cream-cheese-mints';
 
 // Every recipe in the box must be internally consistent. These checks are
 // what the add-recipe skill relies on to catch mistakes.
@@ -149,6 +150,9 @@ describe('recipe box card extras', () => {
     expect(timeLine(breakfastPuffs)).toBe('45 min');
     expect(formatMinutes(60)).toBe('1 hr');
     expect(formatMinutes(40)).toBe('40 min');
+    expect(formatMinutes(24 * 60)).toBe('1 day');
+    expect(formatMinutes(2 * 24 * 60)).toBe('2 days');
+    expect(timeLine(creamCheeseMints)).toBe('60 min + 2 days of drying');
   });
 
   it('stamps night-before recipes, plus any stamps of their own', () => {
