@@ -55,7 +55,7 @@ export const homemadeBread: Recipe = {
       section: 'Dough',
       title: 'Warm the oven, then turn it off',
       text: 'Warm the oven to 150°F, then turn it off. The dough will rise in the warm oven.',
-      temperature: { degrees: 150, unit: 'F', label: 'then turn it off' },
+      temperature: { degrees: 150, unit: 'F' },
       whileWaiting: true,
       tip: "Don't leave it on. You want a warm oven, not a hot one.",
     },
