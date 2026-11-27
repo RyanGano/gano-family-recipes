@@ -1235,25 +1235,6 @@ button {
   }
 }
 
-.recipe-photo {
-  margin: 8px 0 16px;
-}
-
-.recipe-photo img {
-  display: block;
-  width: 100%;
-  border-radius: 6px;
-  box-shadow: var(--shadow);
-}
-
-.recipe-photo figcaption {
-  margin-top: 6px;
-  font-size: 0.85rem;
-  font-style: italic;
-  color: var(--ink-soft);
-  text-align: center;
-}
-
 .badge--night {
   margin-left: 0.6em;
   background: rgba(70, 80, 140, 0.12);
@@ -1451,4 +1432,123 @@ button {
 /* Over a photo, give the stamp a scrap of paper so it stays readable. */
 .has-photo .stamp {
   background: rgba(250, 246, 235, 0.9);
+}
+
+/* On the full card the snapshot is a button that opens the slideshow. */
+.card-thumb--button {
+  padding: 0;
+  background: #fff;
+  cursor: zoom-in;
+  pointer-events: auto;
+  font: inherit;
+}
+
+.card-thumb--button img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* A little "there's more than one" tab on the snapshot's bottom edge. */
+.card-thumb__count {
+  position: absolute;
+  right: -2px;
+  bottom: -11px;
+  font-family: var(--type);
+  font-size: 0.7rem;
+  line-height: 1;
+  color: var(--ink-soft);
+}
+
+.card-thumb__count::before {
+  content: '📷 ';
+}
+
+/* ---------- photo slideshow ---------- */
+.viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(12px + var(--safe-top)) 12px calc(12px + var(--safe-bottom));
+  background: rgba(20, 14, 8, 0.85);
+  animation: viewer-in 0.15s ease-out;
+}
+
+@keyframes viewer-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.viewer__frame {
+  position: relative;
+  margin: 0;
+  max-width: min(640px, 100%);
+  padding: 10px 10px 0;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.viewer__photo {
+  display: block;
+  max-width: 100%;
+  max-height: calc(100vh - 160px);
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.viewer__caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 10px 2px 12px;
+  font-family: var(--hand);
+  font-size: 1.35rem;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.viewer__count {
+  flex: none;
+  font-family: var(--type);
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.viewer__close {
+  position: absolute;
+  top: -14px;
+  right: -6px;
+  z-index: 1;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.viewer__arrow {
+  position: absolute;
+  top: calc(50% - 40px);
+  width: 44px;
+  height: 64px;
+  border: 0;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--ink);
+  font-size: 2.4rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+.viewer__arrow--prev {
+  left: 14px;
+}
+
+.viewer__arrow--next {
+  right: 14px;
 }

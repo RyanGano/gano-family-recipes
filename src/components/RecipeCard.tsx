@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import type { Recipe } from '../api/types';
 import { formatMinutes, formatTimerLength, nightBeforeNotice, recipeStamps, scaleIngredient } from '../lib/format';
 import { toggle, useChecked, useLastStep, useScale } from '../lib/prefs';
@@ -12,6 +12,7 @@ import { Stamps } from './Stamps';
 import { ScalePicker } from './ScalePicker';
 import { WakeToggle } from './WakeToggle';
 import { handPlaced } from '../lib/handPlaced';
+import { PhotoViewer } from './PhotoViewer';
 
 /** The classic recipe card: ingredients and directions on lined paper. */
 export function RecipeCard({ slug }: { slug: string }) {
@@ -46,6 +47,8 @@ function RecipeCardView({ recipe }: { recipe: Recipe }) {
   const resumeAt = lastStep > 0 ? screens[lastStep - 1] : undefined;
   const aheadNotice = nightBeforeNotice(recipe);
   const hero = recipe.photos?.[0];
+  const photoCount = recipe.photos?.length ?? 0;
+  const [viewing, setViewing] = useState(false);
 
   return (
     <div className="card-page">
@@ -58,7 +61,17 @@ function RecipeCardView({ recipe }: { recipe: Recipe }) {
 
       <article className={`index-card index-card--full ${hero ? 'has-photo' : ''}`}>
         <header className={`card-head ${recipeStamps(recipe).length ? 'has-stamps' : ''}`}>
-          {hero && <img className="card-thumb" style={handPlaced(recipe.slug, { tilt: [1, 5], shift: 5 })} src={`${import.meta.env.BASE_URL}${hero.src}`} alt="" />}
+          {hero && (
+            <button
+              className="card-thumb card-thumb--button"
+              style={handPlaced(recipe.slug, { tilt: [1, 5], shift: 5 })}
+              onClick={() => setViewing(true)}
+              aria-label={`See ${photoCount === 1 ? 'the photo' : `all ${photoCount} photos`} of ${recipe.title}`}
+            >
+              <img src={`${import.meta.env.BASE_URL}${hero.src}`} alt="" />
+              {photoCount > 1 && <span className="card-thumb__count">{photoCount}</span>}
+            </button>
+          )}
           <Stamps stamps={recipeStamps(recipe)} seed={recipe.slug} />
           <span className="index-card__category">{recipe.category}</span>
           <h1 className="hand-title">{recipe.title}</h1>
@@ -182,17 +195,7 @@ function RecipeCardView({ recipe }: { recipe: Recipe }) {
           </section>
         ) : null}
 
-        {recipe.photos?.length ? (
-          <section>
-            <h2 className="card-section">Photos</h2>
-            {recipe.photos.map((p) => (
-              <figure key={p.src} className="recipe-photo">
-                <img src={`${import.meta.env.BASE_URL}${p.src}`} alt={`${recipe.title}: ${p.caption}`} loading="lazy" />
-                <figcaption>{p.caption}</figcaption>
-              </figure>
-            ))}
-          </section>
-        ) : null}
+        {viewing && recipe.photos && <PhotoViewer title={recipe.title} photos={recipe.photos} onClose={() => setViewing(false)} />}
       </article>
     </div>
   );
