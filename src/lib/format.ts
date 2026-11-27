@@ -150,9 +150,13 @@ export function nightBeforeNotice(recipe: Recipe): string | undefined {
     : `Best started the night before (step ${first}), though it works without it.`;
 }
 
-/** "40 min", "1 hr", "2½ hrs". */
+/** "40 min", "1 hr", "2½ hrs", and whole days from 24 hrs up ("2 days"). */
 export function formatMinutes(minutes: number): string {
   if (minutes < 60) return `${Math.round(minutes)} min`;
+  if (minutes >= 24 * 60) {
+    const days = minutes / (24 * 60);
+    return `${formatAmount(days)} ${days === 1 ? 'day' : 'days'}`;
+  }
   const hours = minutes / 60;
   return `${formatAmount(hours)} ${hours === 1 ? 'hr' : 'hrs'}`;
 }

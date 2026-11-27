@@ -48,7 +48,7 @@ Walk the instructions one sentence at a time and decide the cook-mode screens. F
 | Work that fits inside a wait ("meanwhile", or a coating made while it bakes) | Reorder it to sit after the timer step, with a "while you wait" badge | `whileWaiting` |
 | A hint, warning or family trick | Tip box | `tip` |
 | Equipment worth setting out first | Shown on the "gather" screen | `equipment` |
-| Hands-off time measured in hours (rising, chilling, marinating) | Added to the recipe box time ("60 min + 2½ hrs of rising") and a badge on the card | `waitTime` |
+| Hands-off time measured in hours or days (rising, chilling, marinating, drying) | Added to the recipe box time ("60 min + 2½ hrs of rising"; 24 hrs and up shows as days, "2 days of drying") and a badge on the card | `waitTime` |
 | Anything unusual a cook should know before choosing this recipe ("Needs a candy thermometer"). Not the night before, which stamps itself | Rubber stamp on the recipe box card | `stamps` |
 | An ingredient most kitchens don't keep on hand (orange juice, almond flavoring, buttermilk) | Listed under "What you might need to buy" on the box card and recipe page. Use a string to name the real purchase ("Fresh oranges (for the grated rind)") | `Ingredient.buy` |
 | A cooking term a new cook may not know (knead, burp, punch down) | In cook mode the word is tappable in step text and tips and shows its definition. Add the term once to `src/api/glossary.ts`; every recipe picks it up | `glossary` |
