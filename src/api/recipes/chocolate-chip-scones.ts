@@ -111,15 +111,15 @@ export const chocolateChipScones: Recipe = {
     {
       id: 'shape',
       section: 'Scones',
-      title: 'Pat into a round',
-      text: 'Roll or pat the dough into a round ¾ inch thick, about 10 inches across.',
-      tip: 'Your hands work fine if you have no rolling pin. Making a double batch? Shape two rounds.',
+      title: 'Pat out the dough',
+      text: 'Roll or pat the dough ¾ inch thick: into a round about 10 inches across for wedges, or a rectangle about 8 × 10 inches for squares.',
+      tip: 'Your hands work fine if you have no rolling pin. Making a double batch? Shape two.',
     },
     {
       id: 'cut',
       section: 'Scones',
-      title: 'Cut 12 wedges',
-      text: 'Cut the round into 12 wedges, like a pizza, and place them 2 inches apart on the baking sheet.',
+      title: 'Cut into 12 pieces',
+      text: 'Cut a round into 12 wedges, like a pizza, or cut a rectangle into 12 squares (3 rows of 4). Place them 2 inches apart on the baking sheet.',
       tip: 'If they don\'t all fit 2 inches apart, grease a second sheet and bake them in two batches.',
     },
     {
