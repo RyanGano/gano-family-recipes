@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { Recipe } from '../api/types';
 import { formatMinutes, formatTimerLength, nightBeforeNotice, recipeStamps, scaleIngredient } from '../lib/format';
 import { toggle, useChecked, useLastStep, useScale } from '../lib/prefs';
@@ -13,6 +13,8 @@ import { ScalePicker } from './ScalePicker';
 import { WakeToggle } from './WakeToggle';
 import { handPlaced } from '../lib/handPlaced';
 import { PhotoViewer } from './PhotoViewer';
+import { ChoicePicker } from './ChoicePicker';
+import { applyPicks, usePicks } from '../lib/choices';
 
 /** The classic recipe card: ingredients and directions on lined paper. */
 export function RecipeCard({ slug }: { slug: string }) {
@@ -37,7 +39,9 @@ export function RecipeCard({ slug }: { slug: string }) {
   return <RecipeCardView recipe={recipe.value} />;
 }
 
-function RecipeCardView({ recipe }: { recipe: Recipe }) {
+function RecipeCardView({ recipe: base }: { recipe: Recipe }) {
+  const [picks, setPicks] = usePicks(base.slug);
+  const recipe = useMemo(() => applyPicks(base, picks), [base, picks]);
   const [scale, setScale] = useScale(recipe.slug);
   const [checked, setChecked] = useChecked(recipe.slug);
   const [lastStep] = useLastStep(recipe.slug);
@@ -108,6 +112,7 @@ function RecipeCardView({ recipe }: { recipe: Recipe }) {
         </div>
 
         <ScalePicker recipe={recipe} scale={scale} onChange={setScale} />
+        <ChoicePicker recipe={recipe} picks={picks} onChange={setPicks} />
 
         <section>
           <h2 className="card-section">Ingredients</h2>

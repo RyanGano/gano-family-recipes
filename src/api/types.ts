@@ -46,6 +46,26 @@ export interface Recipe {
   notes?: string[];
   /** Photos shown on the recipe card, in order: the finished dish, the original card, ... */
   photos?: Photo[];
+  /**
+   * Choices the cook makes before starting, e.g. which frosting. Ingredients and
+   * steps tagged `when` only appear for their option. The first option is the default.
+   */
+  choices?: Choice[];
+}
+
+/** A pick-one choice on a recipe, e.g. "Frosting": Cream cheese or Chocolate. */
+export interface Choice {
+  /** Unique within the recipe; `when` refers to it. */
+  id: string;
+  /** Shown above the options, e.g. "Frosting". */
+  label: string;
+  options: { id: string; label: string; emoji?: string }[];
+}
+
+/** Shows an ingredient or step only when `choice` is set to `option`. */
+export interface When {
+  choice: string;
+  option: string;
 }
 
 export interface Photo {
@@ -98,6 +118,8 @@ export interface Ingredient {
    * and opening it sets the linked recipe's scaler to the scaled number of batches.
    */
   recipe?: string;
+  /** Only for one option of a recipe choice. */
+  when?: When;
 }
 
 /** A reference from a step to an ingredient, optionally only part of it. */
@@ -160,4 +182,6 @@ export interface Step {
    * the number of batches, so the cook never leaves this recipe.
    */
   makesRecipe?: string;
+  /** Only for one option of a recipe choice. */
+  when?: When;
 }

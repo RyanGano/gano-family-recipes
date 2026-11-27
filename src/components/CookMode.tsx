@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type TouchEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type TouchEvent } from 'react';
 import type { Recipe } from '../api/types';
 import type { CookStep } from '../lib/cookSteps';
 import { formatTimerLength, nightBeforeNotice, scaleIngredient, scaleUse } from '../lib/format';
@@ -14,6 +14,8 @@ import { isVoiceProblem, VoiceHelp } from './VoiceHelp';
 import { Amount } from './Amount';
 import { GlossaryText } from './GlossaryText';
 import { ScalePicker } from './ScalePicker';
+import { ChoicePicker } from './ChoicePicker';
+import { applyPicks, usePicks, type Picks } from '../lib/choices';
 import { TimerTray } from './TimerTray';
 import { WakeToggle } from './WakeToggle';
 
@@ -25,17 +27,28 @@ import { WakeToggle } from './WakeToggle';
  * Change steps with the big buttons, a swipe, arrow keys, or your voice.
  */
 export function CookMode({ slug, step }: { slug: string; step: number }) {
-  const recipe = useRecipe(slug);
+  const loaded = useRecipe(slug);
+  const [picks, setPicks] = usePicks(slug);
+  const recipe = useMemo<typeof loaded>(
+    () => (loaded.kind === 'ready' ? { kind: 'ready', value: applyPicks(loaded.value, picks) } : loaded),
+    [loaded, picks],
+  );
   const screens = useCookSteps(recipe.kind === 'ready' ? recipe.value : undefined);
   if (recipe.kind === 'missing') {
     go({ kind: 'box' }, { replace: true });
     return null;
   }
   if (recipe.kind === 'loading' || !screens) return <div className="cook" />;
-  return <CookView recipe={recipe.value} screens={screens} requested={step} />;
+  return <CookView recipe={recipe.value} screens={screens} requested={step} picks={picks} setPicks={setPicks} />;
 }
 
-function CookView({ recipe, screens, requested }: { recipe: Recipe; screens: CookStep[]; requested: number }) {
+function CookView({
+  recipe,
+  screens,
+  requested,
+  picks,
+  setPicks,
+}: { recipe: Recipe; screens: CookStep[]; requested: number; picks: Picks; setPicks: (p: Picks) => void }) {
   const total = screens.length;
   const last = total + 1;
   const index = Math.min(Math.max(requested, 0), last);
@@ -265,7 +278,7 @@ function CookView({ recipe, screens, requested }: { recipe: Recipe; screens: Coo
 
       <div className="cook-body" ref={bodyRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         <div className="cook-card">
-          {index === 0 && <GatherScreen recipe={recipe} screens={screens} scale={scale} setScale={setScale} checked={checked} setChecked={setChecked} />}
+          {index === 0 && <GatherScreen recipe={recipe} screens={screens} scale={scale} setScale={setScale} picks={picks} setPicks={setPicks} checked={checked} setChecked={setChecked} />}
           {screen && (
             <StepScreen
               recipeSlug={recipe.slug}
@@ -367,9 +380,11 @@ function GatherScreen({
   screens,
   scale,
   setScale,
+  picks,
+  setPicks,
   checked,
   setChecked,
-}: { recipe: Recipe; screens: CookStep[]; scale: number; setScale: (s: number) => void } & CheckProps) {
+}: { recipe: Recipe; screens: CookStep[]; scale: number; setScale: (s: number) => void; picks: Picks; setPicks: (p: Picks) => void } & CheckProps) {
   // A folded-in recipe's ingredients are listed under the ingredient it makes.
   const madeFrom = (ingredientId: string) => screens.find((s) => s.part?.ingredient.id === ingredientId);
   const rows = recipe.ingredients.flatMap((ing) => {
@@ -391,6 +406,7 @@ function GatherScreen({
         </p>
       )}
       <ScalePicker recipe={recipe} scale={scale} onChange={setScale} />
+      <ChoicePicker recipe={recipe} picks={picks} onChange={setPicks} />
       <p className="cook-hint">
         You can tap each one as you set it out · {gathered} of {rows.length}
       </p>
