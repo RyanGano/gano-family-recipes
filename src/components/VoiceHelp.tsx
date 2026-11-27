@@ -30,8 +30,8 @@ const offersChrome = (b: Browser) => b === 'edge-android' || b === 'samsung';
 
 /** Opens the current page and step in Chrome on Android. */
 function chromeIntentUrl(): string {
-  const { host, pathname, hash } = window.location;
-  return `intent://${host}${pathname}?go=${encodeURIComponent(hash)}#Intent;scheme=https;package=com.android.chrome;end`;
+  const { host, pathname } = window.location;
+  return `intent://${host}${pathname}#Intent;scheme=https;package=com.android.chrome;end`;
 }
 
 const ALLOW_MIC: Record<Browser, string[]> = {
