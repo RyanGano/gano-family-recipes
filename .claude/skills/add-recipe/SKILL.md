@@ -53,7 +53,7 @@ Walk the instructions one sentence at a time and decide the cook-mode screens. F
 | An ingredient most kitchens don't keep on hand (orange juice, almond flavoring, buttermilk) | Listed under "What you might need to buy" on the box card and recipe page. Use a string to name the real purchase ("Fresh oranges (for the grated rind)") | `Ingredient.buy` |
 | A cooking term a new cook may not know (knead, burp, punch down) | In cook mode the word is tappable in step text and tips and shows its definition. Add the term once to `src/api/glossary.ts`; every recipe picks it up | `glossary` |
 | "The day/night before", or prep that must sit overnight | "Night before" badge on the step, plus a warning on the card and gather screen. Use `'recommended'` when the recipe works without it | `nightBefore` |
-| An ingredient that is its own recipe in the box (a frosting, a sauce, a pie crust) | Linked: the card shows "See the recipe" under the ingredient, cook-mode steps that use it get an "Open the … recipe" button, and opening it sets that recipe's scaler to the scaled number of batches. Give the amount as `quantity: 1, unit: 'batch'` | `Ingredient.recipe` |
+| An ingredient that is its own recipe in the box (a frosting, a sauce, a pie crust) | Linked: the card shows "See the recipe" under the ingredient. On the step where it gets made, `makesRecipe` folds that recipe's steps into cook mode as 20a, 20b, ..., scaled to the batches, with its ingredients listed on the gather screen. Give the amount as `quantity: 1, unit: 'batch'` | `Ingredient.recipe`, `Step.makesRecipe` |
 
 Shape the steps like this:
 

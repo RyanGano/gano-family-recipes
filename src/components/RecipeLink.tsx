@@ -10,20 +10,20 @@ export function linkedScale(ingredient: Ingredient, scale: number): number | und
   return (SCALES as readonly number[]).includes(batches) ? batches : undefined;
 }
 
-/** "📖 Open the cream cheese frosting recipe" for an ingredient made from another recipe. */
-export function RecipeLink({ ingredient, scale, short = false }: { ingredient: Ingredient; scale: number; short?: boolean }) {
+/** "📖 See the recipe" under an ingredient made from another recipe in the box. */
+export function RecipeLink({ ingredient, scale }: { ingredient: Ingredient; scale: number }) {
   const slug = ingredient.recipe;
   if (!slug) return null;
   return (
     <a
-      className={`recipe-link ${short ? 'recipe-link--short' : ''}`}
+      className="recipe-link"
       href={href({ kind: 'recipe', slug })}
       onClick={() => {
         const batches = linkedScale(ingredient, scale);
         if (batches !== undefined) writeStored(scaleKey(slug), batches);
       }}
     >
-      <span aria-hidden>📖</span> {short ? 'See the recipe' : `Open the ${ingredient.name} recipe`}
+      <span aria-hidden>📖</span> See the recipe
     </a>
   );
 }
