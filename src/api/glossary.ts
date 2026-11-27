@@ -31,4 +31,22 @@ export const glossary: GlossaryTerm[] = [
     definition:
       'Press your fist into the risen dough to let the air out, then fold the edges in toward the middle. It evens out the dough before shaping.',
   },
+  {
+    term: 'Grease',
+    forms: ['grease', 'greased', 'greasing'],
+    definition:
+      'Coat the inside of a pan with a thin layer of butter, shortening or cooking spray so the food does not stick. Cover the bottom, the sides and the corners.',
+  },
+  {
+    term: 'Soften',
+    forms: ['soften', 'softened', 'softens'],
+    definition:
+      'Let cold butter or cream cheese sit on the counter until it is soft enough that a finger pressed into it leaves a dent easily, usually 30 to 60 minutes.',
+  },
+  {
+    term: 'Dust',
+    forms: ['dust', 'dusted', 'dusting'],
+    definition:
+      'Sprinkle a light, even layer of powdered sugar (or flour) over the top, usually by tapping it through a fine-mesh strainer.',
+  },
 ];
