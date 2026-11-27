@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import type { Recipe } from '../api/types';
-import { formatTimerLength, scaleIngredient } from '../lib/format';
+import { formatTimerLength, nightBeforeNotice, scaleIngredient } from '../lib/format';
 import { toggle, useChecked, useLastStep, useScale } from '../lib/prefs';
 import { href } from '../lib/route';
 import { useRecipe } from '../lib/useRecipes';
@@ -37,6 +37,7 @@ function RecipeCardView({ recipe }: { recipe: Recipe }) {
   const [lastStep] = useLastStep(recipe.slug);
   const stepCount = recipe.steps.length;
   const canResume = lastStep > 0 && lastStep <= stepCount;
+  const aheadNotice = nightBeforeNotice(recipe);
 
   return (
     <div className="card-page">
@@ -59,6 +60,12 @@ function RecipeCardView({ recipe }: { recipe: Recipe }) {
             <span className="badge">{stepCount} steps</span>
           </div>
         </header>
+
+        {aheadNotice && (
+          <p className="ahead-notice">
+            <span aria-hidden>🌙</span> {aheadNotice}
+          </p>
+        )}
 
         <div className="cook-cta">
           <a className="btn btn--primary btn--big" href={href({ kind: 'cook', slug: recipe.slug, step: 0 })}>
@@ -132,6 +139,7 @@ function RecipeCardView({ recipe }: { recipe: Recipe }) {
                     return (
                       <li key={s.id} value={stepNumber}>
                         <a className="direction" href={href({ kind: 'cook', slug: recipe.slug, step: stepNumber })}>
+                          {s.nightBefore && <span className="badge badge--night">🌙 Night before</span>}
                           {s.text}
                           {s.timers?.map((t) => (
                             <span key={t.label} className="badge badge--timer">⏱ {formatTimerLength(t)}</span>
@@ -157,12 +165,17 @@ function RecipeCardView({ recipe }: { recipe: Recipe }) {
           </section>
         ) : null}
 
-        {recipe.photo && (
+        {recipe.photos?.length ? (
           <section>
-            <h2 className="card-section">The original card</h2>
-            <img className="original-photo" src={`${import.meta.env.BASE_URL}${recipe.photo}`} alt={`Original recipe card for ${recipe.title}`} loading="lazy" />
+            <h2 className="card-section">Photos</h2>
+            {recipe.photos.map((p) => (
+              <figure key={p.src} className="recipe-photo">
+                <img src={`${import.meta.env.BASE_URL}${p.src}`} alt={`${recipe.title}: ${p.caption}`} loading="lazy" />
+                <figcaption>{p.caption}</figcaption>
+              </figure>
+            ))}
           </section>
-        )}
+        ) : null}
       </article>
     </div>
   );

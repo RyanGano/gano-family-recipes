@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { allRecipes } from './recipes';
-import { formatAmount, formatClock, formatTimerLength, scaleIngredient, scaleUse } from '../lib/format';
+import { formatAmount, formatClock, formatTimerLength, nightBeforeNotice, scaleIngredient, scaleUse } from '../lib/format';
 import { matchCommand } from '../lib/voice';
 import { forSpeech } from '../lib/speech';
 import { breakfastPuffs } from './recipes/breakfast-puffs';
+import { orangeTwists } from './recipes/orange-twists';
 
 // Every recipe in the box must be internally consistent. These checks are
 // what the add-recipe skill relies on to catch mistakes.
@@ -86,6 +87,21 @@ describe('amount formatting', () => {
     expect(formatClock(3725)).toBe('1:02:05');
     expect(formatTimerLength({ seconds: 1200, maxSeconds: 1500 })).toBe('20–25 min');
     expect(formatTimerLength({ seconds: 30 })).toBe('30 sec');
+  });
+});
+
+describe('night-before notice', () => {
+  it('is absent when no step is done the night before', () => {
+    expect(nightBeforeNotice(breakfastPuffs)).toBeUndefined();
+  });
+
+  it('says optional prep is recommended, not required', () => {
+    expect(nightBeforeNotice(orangeTwists)).toBe('Best started the night before (step 1), though it works without it.');
+  });
+
+  it('says required prep must be done', () => {
+    const steps = orangeTwists.steps.map((s) => (s.nightBefore ? { ...s, nightBefore: 'required' as const } : s));
+    expect(nightBeforeNotice({ ...orangeTwists, steps })).toBe('Start this the night before (step 1).');
   });
 });
 

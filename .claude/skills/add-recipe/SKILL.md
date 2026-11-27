@@ -47,6 +47,7 @@ Walk the instructions one sentence at a time and decide the cook-mode screens. F
 | Work that fits inside a wait ("meanwhile", or a coating made while it bakes) | Reorder it to sit after the timer step, with a "while you wait" badge | `whileWaiting` |
 | A hint, warning or family trick | Tip box | `tip` |
 | Equipment worth setting out first | Shown on the "gather" screen | `equipment` |
+| "The day/night before", or prep that must sit overnight | "Night before" badge on the step, plus a warning on the card and gather screen. Use `'recommended'` when the recipe works without it | `nightBefore` |
 
 Shape the steps like this:
 
@@ -77,7 +78,7 @@ Then ask with `AskUserQuestion`: approve, or change something. Loop on their cha
 2. **The recipe**: create `src/api/recipes/<slug>.ts`, exporting a `Recipe`, and add it to `allRecipes` in `src/api/recipes/index.ts`.
    - Store amounts as numbers (`0.5`, `1 / 3`) and use singular units (`cup`, `teaspoon`). The UI handles fractions and plurals. Set `singular` on countable items ("egg").
    - The `text` of each step is the original instruction, made complete. The cook-mode `title` and `tip` are your additions.
-   - If the source was a photo, save it to `public/photos/<slug>.jpg` and set `photo: 'photos/<slug>.jpg'`. The recipe card shows it as "The original card".
+   - Photos go in `public/photos/` and are listed in `photos` as `{ src: 'photos/<slug>-<what>.jpg', caption }`. The card shows each one with its caption. Ask before saving the source card photos: the user may want only a photo of the finished dish.
 3. **Verify**:
    - `npm test`. The recipe checks catch bad ingredient references, unused ingredients, bad sections and bad timers.
    - `npm run build`.

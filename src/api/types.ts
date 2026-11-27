@@ -33,8 +33,15 @@ export interface Recipe {
   steps: Step[];
   /** Extra notes shown at the bottom of the card and on the finish screen. */
   notes?: string[];
-  /** Optional photo, path relative to /public (e.g. "photos/puffs.jpg"). */
-  photo?: string;
+  /** Photos shown on the recipe card, in order: the finished dish, the original card, ... */
+  photos?: Photo[];
+}
+
+export interface Photo {
+  /** Path relative to /public, e.g. "photos/orange-twists.jpg". */
+  src: string;
+  /** Shown under the photo and used as its alt text, e.g. "The original card". */
+  caption: string;
 }
 
 export type Category =
@@ -107,4 +114,10 @@ export interface Step {
   tip?: string;
   /** Do this step while an earlier timer runs (shown as a badge). */
   whileWaiting?: boolean;
+  /**
+   * Do this step the day or night before. Shown as a badge in cook mode, and the
+   * recipe card and gather screen warn up front. "recommended" means the recipe
+   * still works without it ("they turn out better").
+   */
+  nightBefore?: 'required' | 'recommended';
 }

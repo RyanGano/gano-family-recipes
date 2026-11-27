@@ -1192,12 +1192,43 @@ button {
   }
 }
 
-.original-photo {
+.recipe-photo {
+  margin: 8px 0 16px;
+}
+
+.recipe-photo img {
   display: block;
   width: 100%;
   border-radius: 6px;
   box-shadow: var(--shadow);
-  margin-top: 8px;
+}
+
+.recipe-photo figcaption {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.badge--night {
+  margin-left: 0.6em;
+  background: rgba(70, 80, 140, 0.12);
+  border: 1px solid #5a6496;
+  color: #3a4170;
+}
+
+.directions .badge--night {
+  margin-left: 0;
+}
+
+.ahead-notice {
+  margin: 12px 0;
+  padding: 10px 12px;
+  background: rgba(70, 80, 140, 0.1);
+  border-left: 5px solid #5a6496;
+  border-radius: 6px;
+  font-size: 0.9em;
 }
 
 .voice-help__steps {

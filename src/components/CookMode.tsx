@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type TouchEvent } from 'react';
 import type { Recipe, Step } from '../api/types';
-import { formatTimerLength, scaleIngredient, scaleUse } from '../lib/format';
+import { formatTimerLength, nightBeforeNotice, scaleIngredient, scaleUse } from '../lib/format';
 import { toggle, useChecked, useLastStep, useScale, useTextSize } from '../lib/prefs';
 import { go, href } from '../lib/route';
 import { playBlip } from '../lib/sound';
@@ -360,10 +360,16 @@ interface CheckProps {
 
 function GatherScreen({ recipe, scale, setScale, checked, setChecked }: { recipe: Recipe; scale: number; setScale: (s: number) => void } & CheckProps) {
   const gathered = recipe.ingredients.filter((i) => checked.includes(`ing:${i.id}`)).length;
+  const aheadNotice = nightBeforeNotice(recipe);
   return (
     <>
       <p className="cook-section">Before you start</p>
       <h1 className="cook-title">Gather everything</h1>
+      {aheadNotice && (
+        <p className="ahead-notice">
+          <span aria-hidden>🌙</span> {aheadNotice}
+        </p>
+      )}
       <ScalePicker recipe={recipe} scale={scale} onChange={setScale} />
       <p className="cook-hint">
         Tap each one as you set it out · {gathered} of {recipe.ingredients.length}
@@ -432,6 +438,9 @@ function StepScreen({
       <p className="cook-section">
         {step.section}
         {step.whileWaiting && <span className="badge badge--soft">while you wait</span>}
+        {step.nightBefore && (
+          <span className="badge badge--night">🌙 night before{step.nightBefore === 'recommended' ? ' · optional' : ''}</span>
+        )}
       </p>
       <h1 className="cook-title">
         <span className="cook-title__num">{index}</span>

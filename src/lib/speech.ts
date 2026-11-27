@@ -1,5 +1,5 @@
 import type { Recipe } from '../api/types';
-import { formatTimerLength, scaleIngredient, scaleUse, type ScaledLine } from './format';
+import { formatTimerLength, nightBeforeNotice, scaleIngredient, scaleUse, type ScaledLine } from './format';
 
 const GLYPHS: Record<string, string> = {
   '⅛': '1/8',
@@ -31,11 +31,13 @@ export function screenSpeech(recipe: Recipe, index: number, scale: number): stri
   const total = recipe.steps.length;
   if (index === 0) {
     const all = recipe.ingredients.map((i) => lineText(scaleIngredient(i, { scale }))).join(', ');
-    return forSpeech(`${recipe.title}. First, gather your ingredients: ${all}. Say next when you're ready.`);
+    const ahead = nightBeforeNotice(recipe);
+    return forSpeech(`${recipe.title}. ${ahead ? `${ahead} ` : ''}First, gather your ingredients: ${all}. Say next when you're ready.`);
   }
   if (index > total) return forSpeech(`All done. Enjoy your ${recipe.title}!`);
   const step = recipe.steps[index - 1];
   const parts = [`Step ${index} of ${total}. ${step.title}.`];
+  if (step.nightBefore) parts.push(step.nightBefore === 'required' ? 'Do this the night before.' : 'Best done the night before.');
   if (step.uses?.length) parts.push(`You'll need ${step.uses.map((u) => lineText(scaleUse(recipe, u, scale))).join(', ')}.`);
   parts.push(step.text);
   if (step.checklist?.length) {
