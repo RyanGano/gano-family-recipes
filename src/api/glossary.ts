@@ -49,4 +49,10 @@ export const glossary: GlossaryTerm[] = [
     definition:
       'Sprinkle a light, even layer of powdered sugar (or flour) over the top, usually by tapping it through a fine-mesh strainer.',
   },
+  {
+    term: 'Cut in',
+    forms: ['cut in', 'cut in the butter'],
+    definition:
+      'Work cold butter into flour with a pastry blender or two forks, pressing and cutting until the butter is in small crumbs coated with flour. Do not let it melt or turn smooth.',
+  },
 ];
