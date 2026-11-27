@@ -25,6 +25,17 @@ export interface Recipe {
   /** Minutes. Optional, shown as badges. */
   prepMinutes?: number;
   cookMinutes?: number;
+  /**
+   * Hands-off time on top of prep and cook, such as rising or chilling. Shown as
+   * "60 min + 2½ hrs of rising" in the recipe box and as its own badge on the card.
+   */
+  waitTime?: { minutes: number; label: string };
+  /**
+   * Rubber stamps on the recipe box card for anything unusual about the recipe
+   * ("Needs a candy thermometer"). A recipe with `nightBefore` steps gets
+   * "Start the night before" automatically, so don't repeat it here.
+   */
+  stamps?: string[];
   /** Ordered list of sections, e.g. ["Puffs", "Sugar Coating"]. */
   sections: string[];
   ingredients: Ingredient[];
@@ -71,6 +82,13 @@ export interface Ingredient {
   singular?: string;
   /** Trailing preparation note, e.g. "melted". */
   note?: string;
+  /**
+   * Puts this ingredient on the "What you might need to buy" list: something a
+   * cook is unlikely to have on hand. `true` lists the ingredient itself (scaled).
+   * A string names what to buy instead, e.g. "Fresh oranges (for the grated rind)".
+   * Ingredients with the same string are listed once.
+   */
+  buy?: true | string;
 }
 
 /** A reference from a step to an ingredient, optionally only part of it. */

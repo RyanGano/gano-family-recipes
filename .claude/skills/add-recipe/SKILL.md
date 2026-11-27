@@ -47,6 +47,9 @@ Walk the instructions one sentence at a time and decide the cook-mode screens. F
 | Work that fits inside a wait ("meanwhile", or a coating made while it bakes) | Reorder it to sit after the timer step, with a "while you wait" badge | `whileWaiting` |
 | A hint, warning or family trick | Tip box | `tip` |
 | Equipment worth setting out first | Shown on the "gather" screen | `equipment` |
+| Hands-off time measured in hours (rising, chilling, marinating) | Added to the recipe box time ("60 min + 2½ hrs of rising") and a badge on the card | `waitTime` |
+| Anything unusual a cook should know before choosing this recipe ("Needs a candy thermometer"). Not the night before, which stamps itself | Rubber stamp on the recipe box card | `stamps` |
+| An ingredient most kitchens don't keep on hand (orange juice, almond flavoring, buttermilk) | Listed under "What you might need to buy" on the box card and recipe page. Use a string to name the real purchase ("Fresh oranges (for the grated rind)") | `Ingredient.buy` |
 | "The day/night before", or prep that must sit overnight | "Night before" badge on the step, plus a warning on the card and gather screen. Use `'recommended'` when the recipe works without it | `nightBefore` |
 
 Shape the steps like this:

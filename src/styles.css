@@ -1248,3 +1248,89 @@ button {
   color: var(--ink-soft);
   text-align: center;
 }
+
+/* ---------- rubber stamps and the buy list ---------- */
+.card-head {
+  position: relative;
+}
+
+.stamps {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.stamp {
+  display: block;
+  max-width: 7.5em;
+  padding: 2px 6px;
+  border: 2px solid #3a4170;
+  border-radius: 4px;
+  color: #3a4170;
+  font-family: var(--type);
+  font-size: 0.72rem;
+  line-height: 1.25;
+  text-align: center;
+  text-transform: uppercase;
+  transform: rotate(7deg);
+  opacity: 0.85;
+}
+
+.stamp:nth-child(2n) {
+  transform: rotate(-4deg);
+}
+
+.has-stamps .index-card__title,
+.has-stamps .hand-title {
+  padding-right: 120px;
+}
+
+.card-stack__item {
+  position: relative;
+}
+
+.index-card.has-buy {
+  padding-bottom: 44px;
+}
+
+.buy-link {
+  all: unset;
+  cursor: pointer;
+  display: inline-block;
+  margin: 4px 0;
+  font-family: var(--type);
+  font-size: 0.85rem;
+  color: var(--tomato);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.buy-link:focus-visible {
+  outline: 2px solid var(--tomato);
+  outline-offset: 2px;
+}
+
+.buy-link--on-card {
+  position: absolute;
+  left: 18px;
+  bottom: 14px;
+  z-index: 1;
+}
+
+.buy-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  font-size: 1.05rem;
+}
+
+.buy-list li {
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--rule-blue);
+}

@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { Recipe } from '../api/types';
+import { recipeStamps, timeLine } from '../lib/format';
 import { href } from '../lib/route';
 import { useRecipeList } from '../lib/useRecipes';
+import { BuyLink } from './BuyList';
+import { Stamps } from './Stamps';
 import { WakeToggle } from './WakeToggle';
 
 const ALL = 'All';
@@ -58,19 +61,29 @@ export function RecipeBox() {
         {list.kind === 'loading' && <p className="box-empty">Opening the box…</p>}
         {list.kind === 'ready' && shown.length === 0 && <p className="box-empty">No cards match that search.</p>}
         <ul className="card-stack">
-          {shown.map((r) => (
-            <li key={r.slug}>
-              <a className="index-card index-card--link" href={href({ kind: 'recipe', slug: r.slug })}>
-                <span className="index-card__category">{r.category}</span>
-                <span className="index-card__title">{r.title}</span>
-                <span className="index-card__meta">
-                  Makes {r.yield.amount} {r.yield.unit}
-                  {totalMinutes(r) ? ` · ${totalMinutes(r)} min` : ''}
-                  {r.from ? ` · from ${r.from}` : ''}
-                </span>
-              </a>
-            </li>
-          ))}
+          {shown.map((r) => {
+            const stamps = recipeStamps(r);
+            const time = timeLine(r);
+            const buys = r.ingredients.some((i) => i.buy);
+            return (
+              <li key={r.slug} className="card-stack__item">
+                <a
+                  className={`index-card index-card--link ${stamps.length ? 'has-stamps' : ''} ${buys ? 'has-buy' : ''}`}
+                  href={href({ kind: 'recipe', slug: r.slug })}
+                >
+                  <Stamps stamps={stamps} />
+                  <span className="index-card__category">{r.category}</span>
+                  <span className="index-card__title">{r.title}</span>
+                  <span className="index-card__meta">
+                    Makes {r.yield.amount} {r.yield.unit}
+                    {time ? ` · ${time}` : ''}
+                    {r.from ? ` · from ${r.from}` : ''}
+                  </span>
+                </a>
+                <BuyLink recipe={r} className="buy-link--on-card" />
+              </li>
+            );
+          })}
         </ul>
       </main>
       <footer className="box-footer">Collected over the years, one card at a time.</footer>
@@ -86,5 +99,3 @@ function matches(r: Recipe, query: string): boolean {
     .toLowerCase();
   return q.split(/\s+/).every((word) => hay.includes(word));
 }
-
-const totalMinutes = (r: Recipe) => (r.prepMinutes ?? 0) + (r.cookMinutes ?? 0);

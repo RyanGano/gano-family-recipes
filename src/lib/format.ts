@@ -136,3 +136,39 @@ export function nightBeforeNotice(recipe: Recipe): string | undefined {
     ? `Start this the night before (step ${first}).`
     : `Best started the night before (step ${first}), though it works without it.`;
 }
+
+/** "40 min", "1 hr", "2½ hrs". */
+export function formatMinutes(minutes: number): string {
+  if (minutes < 60) return `${Math.round(minutes)} min`;
+  const hours = minutes / 60;
+  return `${formatAmount(hours)} ${hours === 1 ? 'hr' : 'hrs'}`;
+}
+
+/** "60 min + 2½ hrs of rising", "60 min", or "" when the recipe gives no times. */
+export function timeLine(recipe: Recipe): string {
+  const active = (recipe.prepMinutes ?? 0) + (recipe.cookMinutes ?? 0);
+  const parts = active ? [`${active} min`] : [];
+  if (recipe.waitTime) parts.push(`${formatMinutes(recipe.waitTime.minutes)} of ${recipe.waitTime.label}`);
+  return parts.join(' + ');
+}
+
+/** The rubber stamps for the recipe box card. */
+export function recipeStamps(recipe: Recipe): string[] {
+  const nightBefore = recipe.steps.some((s) => s.nightBefore) ? ['Start the night before'] : [];
+  return [...nightBefore, ...(recipe.stamps ?? [])];
+}
+
+/** The "What you might need to buy" list, scaled, one line per thing to buy. */
+export function buyList(recipe: Recipe, scale: number): string[] {
+  const lines: string[] = [];
+  for (const ing of recipe.ingredients) {
+    if (!ing.buy) continue;
+    let line =
+      ing.buy === true
+        ? (({ amount, name }) => [amount, name].filter(Boolean).join(' '))(scaleIngredient(ing, { scale }))
+        : ing.buy;
+    line = line.charAt(0).toUpperCase() + line.slice(1);
+    if (!lines.includes(line)) lines.push(line);
+  }
+  return lines;
+}

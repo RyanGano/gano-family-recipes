@@ -1,6 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { allRecipes } from './recipes';
-import { formatAmount, formatClock, formatTimerLength, nightBeforeNotice, scaleIngredient, scaleUse } from '../lib/format';
+import {
+  buyList,
+  formatAmount,
+  formatClock,
+  formatMinutes,
+  formatTimerLength,
+  nightBeforeNotice,
+  recipeStamps,
+  scaleIngredient,
+  scaleUse,
+  timeLine,
+} from '../lib/format';
 import { matchCommand } from '../lib/voice';
 import { forSpeech } from '../lib/speech';
 import { breakfastPuffs } from './recipes/breakfast-puffs';
@@ -103,6 +114,35 @@ describe('night-before notice', () => {
   it('says required prep must be done', () => {
     const steps = orangeTwists.steps.map((s) => (s.nightBefore ? { ...s, nightBefore: 'required' as const } : s));
     expect(nightBeforeNotice({ ...orangeTwists, steps })).toBe('Start this the night before (step 1).');
+  });
+});
+
+describe('recipe box card extras', () => {
+  it('shows hands-off time after the active time', () => {
+    expect(timeLine(orangeTwists)).toBe('60 min + 2½ hrs of rising');
+    expect(timeLine(breakfastPuffs)).toBe('45 min');
+    expect(formatMinutes(60)).toBe('1 hr');
+    expect(formatMinutes(40)).toBe('40 min');
+  });
+
+  it('stamps night-before recipes, plus any stamps of their own', () => {
+    expect(recipeStamps(breakfastPuffs)).toEqual([]);
+    expect(recipeStamps(orangeTwists)).toEqual(['Start the night before']);
+    expect(recipeStamps({ ...orangeTwists, stamps: ['Needs a candy thermometer'] })).toEqual([
+      'Start the night before',
+      'Needs a candy thermometer',
+    ]);
+  });
+
+  it('lists what to buy once each, scaled', () => {
+    expect(buyList(orangeTwists, 1)).toEqual([
+      '½ cup orange juice',
+      'Fresh oranges (for the grated rind)',
+      'Almond flavoring',
+      'Orange flavoring',
+    ]);
+    expect(buyList(orangeTwists, 2)[0]).toBe('1 cup orange juice');
+    expect(buyList(breakfastPuffs, 1)).toEqual([]);
   });
 });
 
