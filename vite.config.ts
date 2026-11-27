@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// GitHub Pages serves the site from /<repo-name>/.
+// Served at the root of the custom domain recipes.ryangano.com (see public/CNAME).
 export default defineConfig({
-  base: '/gano-family-recipes/',
+  base: '/',
   plugins: [react()],
 });
