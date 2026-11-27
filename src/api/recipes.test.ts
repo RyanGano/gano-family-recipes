@@ -15,6 +15,7 @@ import {
 } from '../lib/format';
 import { matchCommand } from '../lib/voice';
 import { cookSteps } from '../lib/cookSteps';
+import { applyPicks } from '../lib/choices';
 import { cinnamonRolls } from './recipes/cinnamon-rolls';
 import { forSpeech } from '../lib/speech';
 import { breakfastPuffs } from './recipes/breakfast-puffs';
@@ -221,7 +222,8 @@ describe('glossary', () => {
 });
 
 describe('cookSteps', () => {
-  const screens = cookSteps(cinnamonRolls, allRecipes);
+  const rolls = applyPicks(cinnamonRolls, {});
+  const screens = cookSteps(rolls, allRecipes);
 
   it('plays the frosting steps right after "Make the frosting", numbered 20a–20e', () => {
     const at = screens.findIndex((s) => s.step.id === 'make-frosting');
@@ -234,7 +236,7 @@ describe('cookSteps', () => {
       '20e Beat until fluffy',
       '21 Let them cool',
     ]);
-    expect(screens).toHaveLength(cinnamonRolls.steps.length + 5);
+    expect(screens).toHaveLength(rolls.steps.length + 5);
   });
 
   it('scales folded-in amounts by the batches of frosting', () => {
@@ -244,6 +246,39 @@ describe('cookSteps', () => {
   });
 
   it('folds in nothing when the linked recipe is missing', () => {
-    expect(cookSteps(cinnamonRolls, [])).toHaveLength(cinnamonRolls.steps.length);
+    expect(cookSteps(rolls, [])).toHaveLength(rolls.steps.length);
+  });
+});
+
+describe('recipe choices', () => {
+  it('only tags ingredients and steps with choices and options that exist', () => {
+    for (const r of allRecipes) {
+      for (const x of [...r.ingredients, ...r.steps]) {
+        if (!x.when) continue;
+        const choice = r.choices?.find((c) => c.id === x.when!.choice);
+        expect(choice, `${r.slug}/${x.id} → ${x.when.choice}`).toBeTruthy();
+        expect(choice!.options.map((o) => o.id)).toContain(x.when.option);
+      }
+    }
+  });
+
+  it('makes cinnamon rolls with cream cheese frosting unless chocolate is picked', () => {
+    const plain = applyPicks(cinnamonRolls, {});
+    expect(plain.ingredients.map((i) => i.name)).toContain('cream cheese frosting');
+    expect(plain.ingredients.map((i) => i.name)).not.toContain('chocolate frosting');
+    expect(buyList(plain, 1)).toContain('Cream cheese (for the frosting)');
+
+    const choc = applyPicks(cinnamonRolls, { frosting: 'chocolate' });
+    expect(choc.ingredients.map((i) => i.name)).toContain('chocolate frosting');
+    expect(choc.ingredients.map((i) => i.name)).not.toContain('cream cheese frosting');
+    expect(buyList(choc, 1)).not.toContain('Cream cheese (for the frosting)');
+    expect(choc.steps.at(-1)!.text).toBe('When cool, frost with chocolate frosting.');
+    expect(choc.steps).toHaveLength(plain.steps.length);
+    const folded = cookSteps(choc, allRecipes).filter((s) => s.part).map((s) => s.part!.recipe.title);
+    expect(new Set(folded)).toEqual(new Set(['Chocolate Frosting']));
+  });
+
+  it('ignores a remembered pick that no longer exists', () => {
+    expect(applyPicks(cinnamonRolls, { frosting: 'strawberry' }).ingredients.map((i) => i.name)).toContain('cream cheese frosting');
   });
 });

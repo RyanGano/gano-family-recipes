@@ -1,0 +1,67 @@
+import type { Recipe } from '../types';
+
+export const chocolateFrosting: Recipe = {
+  slug: 'chocolate-frosting',
+  title: 'Chocolate Frosting',
+  category: 'Desserts',
+  tags: ['frosting', 'chocolate', 'cocoa', 'cinnamon rolls'],
+  yield: { amount: 2, unit: 'cup' },
+  prepMinutes: 10,
+  sections: ['Frosting'],
+  equipment: ['Mixer and mixing bowl', 'Rubber spatula'],
+  ingredients: [
+    { id: 'butter', section: 'Frosting', quantity: 0.5, unit: 'cup', name: 'butter', note: 'softened' },
+    { id: 'cocoa', section: 'Frosting', quantity: 2 / 3, unit: 'cup', name: 'unsweetened cocoa powder', buy: true },
+    { id: 'powdered-sugar', section: 'Frosting', quantity: 3, unit: 'cup', name: 'powdered sugar' },
+    { id: 'milk', section: 'Frosting', quantity: 1 / 3, unit: 'cup', name: 'milk' },
+    { id: 'vanilla', section: 'Frosting', quantity: 1, unit: 'teaspoon', name: 'vanilla extract' },
+  ],
+  steps: [
+    {
+      id: 'soften',
+      section: 'Frosting',
+      title: 'Soften the butter',
+      text: 'Let the butter sit out until soft.',
+      uses: [{ ref: 'butter' }],
+      tip: 'Set it out 30 to 60 minutes ahead. It should dent easily when you press it.',
+    },
+    {
+      id: 'cream',
+      section: 'Frosting',
+      title: 'Beat the butter',
+      text: 'In the mixing bowl, beat the butter until smooth and creamy.',
+      uses: [{ ref: 'butter' }],
+      timers: [{ label: 'Beat butter', seconds: 60, doneWhen: 'smooth and creamy' }],
+    },
+    {
+      id: 'cocoa',
+      section: 'Frosting',
+      title: 'Beat in the cocoa',
+      text: 'Add the cocoa and beat on low until it is mixed in.',
+      uses: [{ ref: 'cocoa' }],
+      tip: 'Keep the mixer on low, or the cocoa puffs out of the bowl.',
+    },
+    {
+      id: 'sugar-milk',
+      section: 'Frosting',
+      title: 'Add the sugar and milk',
+      text: 'Add the powdered sugar and milk a little at a time, switching between them and beating on low after each addition. You can tap each one as you add it.',
+      checklist: [
+        { use: { ref: 'powdered-sugar', fraction: 1 / 3, label: 'powdered sugar (1st of 3)' } },
+        { use: { ref: 'milk', fraction: 1 / 2, label: 'milk (1st of 2)' } },
+        { use: { ref: 'powdered-sugar', fraction: 1 / 3, label: 'powdered sugar (2nd of 3)' } },
+        { use: { ref: 'milk', fraction: 1 / 2, label: 'milk (last of 2)' } },
+        { use: { ref: 'powdered-sugar', fraction: 1 / 3, label: 'powdered sugar (last of 3)' } },
+      ],
+    },
+    {
+      id: 'vanilla',
+      section: 'Frosting',
+      title: 'Beat until fluffy',
+      text: 'Add the vanilla, turn the mixer up and beat until light and fluffy. Scrape down the bowl as you go.',
+      uses: [{ ref: 'vanilla' }],
+      timers: [{ label: 'Beat until fluffy', seconds: 60, maxSeconds: 2 * 60, doneWhen: 'light and fluffy' }],
+      tip: 'Too thick to spread? Beat in a little more milk, a teaspoon at a time.',
+    },
+  ],
+};

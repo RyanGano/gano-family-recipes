@@ -1,4 +1,7 @@
-import type { Recipe } from '../types';
+import type { Recipe, When } from '../types';
+
+const CREAM_CHEESE: When = { choice: 'frosting', option: 'cream-cheese' };
+const CHOCOLATE: When = { choice: 'frosting', option: 'chocolate' };
 
 export const cinnamonRolls: Recipe = {
   slug: 'cinnamon-rolls',
@@ -11,6 +14,16 @@ export const cinnamonRolls: Recipe = {
   cookMinutes: 12,
   waitTime: { minutes: 105, label: 'rising' },
   sections: ['Dough', 'Filling', 'Frosting'],
+  choices: [
+    {
+      id: 'frosting',
+      label: 'Frosting',
+      options: [
+        { id: 'cream-cheese', label: 'Cream cheese', emoji: '🧁' },
+        { id: 'chocolate', label: 'Chocolate', emoji: '🍫' },
+      ],
+    },
+  ],
   equipment: [
     'Microwave-safe measuring cup',
     'Mixer and mixer bowl',
@@ -54,6 +67,17 @@ export const cinnamonRolls: Recipe = {
       name: 'cream cheese frosting',
       recipe: 'cream-cheese-frosting',
       buy: 'Cream cheese (for the frosting)',
+      when: CREAM_CHEESE,
+    },
+    {
+      id: 'chocolate-frosting',
+      section: 'Frosting',
+      quantity: 1,
+      unit: 'batch',
+      name: 'chocolate frosting',
+      recipe: 'chocolate-frosting',
+      buy: 'Unsweetened cocoa powder (for the frosting)',
+      when: CHOCOLATE,
     },
   ],
   steps: [
@@ -64,6 +88,16 @@ export const cinnamonRolls: Recipe = {
       text: 'Set the butter for the filling out now, so it has time to soften before you spread it.',
       uses: [{ ref: 'butter' }],
       tip: 'Set out the cream cheese and butter for the frosting now too.',
+      when: CREAM_CHEESE,
+    },
+    {
+      id: 'soften-butter-chocolate',
+      section: 'Filling',
+      title: 'Set out the butter',
+      text: 'Set the butter for the filling out now, so it has time to soften before you spread it.',
+      uses: [{ ref: 'butter' }],
+      tip: 'Set out the butter for the chocolate frosting now too.',
+      when: CHOCOLATE,
     },
     {
       id: 'warm-milk',
@@ -219,6 +253,17 @@ export const cinnamonRolls: Recipe = {
       uses: [{ ref: 'frosting' }],
       makesRecipe: 'frosting',
       whileWaiting: true,
+      when: CREAM_CHEESE,
+    },
+    {
+      id: 'make-chocolate-frosting',
+      section: 'Frosting',
+      title: 'Make the frosting',
+      text: 'While the rolls bake and cool, make the chocolate frosting. Its steps come next.',
+      uses: [{ ref: 'chocolate-frosting' }],
+      makesRecipe: 'chocolate-frosting',
+      whileWaiting: true,
+      when: CHOCOLATE,
     },
     {
       id: 'cool',
@@ -232,6 +277,15 @@ export const cinnamonRolls: Recipe = {
       title: 'Frost',
       text: 'When cool, frost with cream cheese frosting.',
       uses: [{ ref: 'frosting' }],
+      when: CREAM_CHEESE,
+    },
+    {
+      id: 'frost-chocolate',
+      section: 'Frosting',
+      title: 'Frost',
+      text: 'When cool, frost with chocolate frosting.',
+      uses: [{ ref: 'chocolate-frosting' }],
+      when: CHOCOLATE,
     },
   ],
   photos: [
