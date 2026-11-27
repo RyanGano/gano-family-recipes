@@ -87,6 +87,7 @@ describe('amount formatting', () => {
     expect(formatClock(3725)).toBe('1:02:05');
     expect(formatTimerLength({ seconds: 1200, maxSeconds: 1500 })).toBe('20–25 min');
     expect(formatTimerLength({ seconds: 30 })).toBe('30 sec');
+    expect(formatTimerLength({ seconds: 80 })).toBe('1 min 20 sec');
   });
 });
 

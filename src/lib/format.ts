@@ -107,9 +107,10 @@ export function formatClock(totalSeconds: number): string {
   return `${h ? `${h}:` : ''}${mm}:${String(sec).padStart(2, '0')}`;
 }
 
-/** 30 → "30 sec", 1200 → "20 min", 5400 → "1 hr 30 min". */
+/** 30 → "30 sec", 80 → "1 min 20 sec", 1200 → "20 min", 5400 → "1 hr 30 min". */
 export function formatDuration(seconds: number): string {
   if (seconds < 60) return `${seconds} sec`;
+  if (seconds < 600 && seconds % 60) return `${Math.floor(seconds / 60)} min ${seconds % 60} sec`;
   const h = Math.floor(seconds / 3600);
   const m = Math.round((seconds % 3600) / 60);
   if (!h) return `${m} min`;
