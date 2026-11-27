@@ -82,4 +82,7 @@ export const creamCheeseMints: Recipe = {
       text: 'Then store the mints in an air-tight container in the freezer or refrigerator.',
     },
   ],
+  photos: [
+    { src: 'photos/cream-cheese-mints.jpg', caption: 'Molded roses and leaves, drying on wax paper' },
+  ],
 };
