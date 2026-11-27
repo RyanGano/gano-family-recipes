@@ -8,9 +8,9 @@ export const creamCheeseMints: Recipe = {
   yield: { amount: 100, unit: 'mints' },
   prepMinutes: 60,
   waitTime: { minutes: 2 * 24 * 60, label: 'drying' },
-  stamps: ['Needs candy molds', 'Dries 2–3 days'],
+  stamps: ['Dries 2–3 days'],
   sections: ['Mints'],
-  equipment: ['Mixer and mixing bowl', 'Rubber candy molds', 'Waxed paper', 'Trays or baking sheets', 'Air-tight container'],
+  equipment: ['Mixer and mixing bowl', 'Rubber candy molds (optional)', 'Waxed paper', 'Trays or baking sheets', 'Air-tight container'],
   ingredients: [
     { id: 'cream-cheese', section: 'Mints', quantity: 8, unit: 'ounce', name: 'cream cheese', note: 'softened', buy: true },
     { id: 'flavoring', section: 'Mints', quantity: 0.5, maxQuantity: 1, unit: 'teaspoon', name: 'flavoring extract', note: 'any kind', buy: true },
@@ -60,7 +60,7 @@ export const creamCheeseMints: Recipe = {
       title: 'Dip and press into the molds',
       text: 'Dip each ball in granulated sugar, then press it into a candy mold.',
       uses: [{ ref: 'granulated-sugar' }],
-      tip: 'Dip the side that goes into the mold. Press firmly so the design comes out sharp, then flex the mold to pop the mint out.',
+      tip: 'Molds work great, but you don’t need them. For a quicker way, roll each ball in the sugar and smash it with a fork to decorate it. With a mold, dip the side that goes in, press firmly, then flex the mold to pop the mint out.',
     },
     {
       id: 'set-out',
