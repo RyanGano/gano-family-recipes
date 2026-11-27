@@ -1,5 +1,5 @@
 import type { Recipe } from '../api/types';
-import { formatAmount } from '../lib/format';
+import { formatAmount, formatUnit } from '../lib/format';
 import { SCALES } from '../lib/prefs';
 
 /** "Makes 24 puffs" with ½× / 1× / 2× / 3× buttons that scale every amount. */
@@ -7,7 +7,7 @@ export function ScalePicker({ recipe, scale, onChange }: { recipe: Recipe; scale
   return (
     <div className="scale">
       <span className="scale__label">
-        Makes <strong>{formatAmount(recipe.yield.amount * scale)}</strong> {recipe.yield.unit}
+        Makes <strong>{formatAmount(recipe.yield.amount * scale)}</strong> {formatUnit(recipe.yield.unit, recipe.yield.amount * scale)}
       </span>
       <div className="scale__buttons" role="group" aria-label="Batch size">
         {SCALES.map((s) => (

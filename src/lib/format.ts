@@ -46,6 +46,7 @@ const UNIT_PLURALS: Record<string, string> = {
   quart: 'quarts',
   pint: 'pints',
   slice: 'slices',
+  batch: 'batches',
 };
 
 function isPlural(value: number): boolean {

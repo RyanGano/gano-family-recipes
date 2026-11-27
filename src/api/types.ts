@@ -20,7 +20,7 @@ export interface Recipe {
   story?: string;
   category: Category;
   tags?: string[];
-  /** What one batch makes. `amount` is what the scaler multiplies. */
+  /** What one batch makes. `amount` is what the scaler multiplies; units listed in `src/lib/format.ts` ("cup") get automatic plurals. */
   yield: { amount: number; unit: string };
   /** Minutes. Optional, shown as badges. */
   prepMinutes?: number;
@@ -91,6 +91,13 @@ export interface Ingredient {
    * Ingredients with the same string are listed once.
    */
   buy?: true | string;
+  /**
+   * Slug of another recipe in the box that makes this ingredient, e.g.
+   * "cream-cheese-frosting". Give the amount in batches (`quantity: 1, unit: 'batch'`).
+   * The recipe card and cook-mode steps that use it show an "Open the recipe" link,
+   * and opening it sets the linked recipe's scaler to the scaled number of batches.
+   */
+  recipe?: string;
 }
 
 /** A reference from a step to an ingredient, optionally only part of it. */

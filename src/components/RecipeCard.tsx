@@ -6,6 +6,7 @@ import { href } from '../lib/route';
 import { useRecipe } from '../lib/useRecipes';
 import { Amount } from './Amount';
 import { BuyLink } from './BuyList';
+import { RecipeLink } from './RecipeLink';
 import { Stamps } from './Stamps';
 import { ScalePicker } from './ScalePicker';
 import { WakeToggle } from './WakeToggle';
@@ -109,6 +110,7 @@ function RecipeCardView({ recipe }: { recipe: Recipe }) {
                             <Amount line={scaleIngredient(ing, { scale })} />
                           </span>
                         </button>
+                        <RecipeLink ingredient={ing} scale={scale} short />
                       </li>
                     );
                   })}

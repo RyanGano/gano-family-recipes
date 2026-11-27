@@ -54,6 +54,14 @@ describe.each(allRecipes.map((r) => [r.slug, r] as const))('recipe %s', (_slug, 
     for (const i of recipe.ingredients) expect(used, `ingredient ${i.id} is never used`).toContain(i.id);
   });
 
+  it('links only to recipes in the box, in batches', () => {
+    for (const i of recipe.ingredients.filter((x) => x.recipe)) {
+      expect(allRecipes.map((r) => r.slug), `ingredient ${i.id} links to ${i.recipe}`).toContain(i.recipe);
+      expect(i.recipe).not.toBe(recipe.slug);
+      expect(i.unit, `ingredient ${i.id} should be measured in batches`).toBe('batch');
+    }
+  });
+
   it('has sensible timers', () => {
     for (const t of recipe.steps.flatMap((s) => s.timers ?? [])) {
       expect(t.seconds).toBeGreaterThan(0);

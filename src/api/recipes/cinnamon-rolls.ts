@@ -10,7 +10,6 @@ export const cinnamonRolls: Recipe = {
   prepMinutes: 45,
   cookMinutes: 12,
   waitTime: { minutes: 105, label: 'rising' },
-  stamps: ['Frosting recipe not included'],
   sections: ['Dough', 'Filling', 'Frosting'],
   equipment: [
     'Microwave-safe measuring cup',
@@ -47,7 +46,15 @@ export const cinnamonRolls: Recipe = {
     { id: 'butter', section: 'Filling', name: 'butter', note: 'softened' },
     { id: 'brown-sugar', section: 'Filling', name: 'brown sugar' },
     { id: 'cinnamon', section: 'Filling', name: 'ground cinnamon' },
-    { id: 'frosting', section: 'Frosting', name: 'cream cheese frosting', buy: 'Cream cheese frosting (or what you need to make it)' },
+    {
+      id: 'frosting',
+      section: 'Frosting',
+      quantity: 1,
+      unit: 'batch',
+      name: 'cream cheese frosting',
+      recipe: 'cream-cheese-frosting',
+      buy: 'Cream cheese (for the frosting)',
+    },
   ],
   steps: [
     {
@@ -56,6 +63,7 @@ export const cinnamonRolls: Recipe = {
       title: 'Set out the butter',
       text: 'Set the butter for the filling out now, so it has time to soften before you spread it.',
       uses: [{ ref: 'butter' }],
+      tip: 'Set out the cream cheese and butter for the frosting now too.',
     },
     {
       id: 'warm-milk',
@@ -204,6 +212,14 @@ export const cinnamonRolls: Recipe = {
       tip: 'For a softer, doughier roll, take them out closer to 10 minutes.',
     },
     {
+      id: 'make-frosting',
+      section: 'Frosting',
+      title: 'Make the frosting',
+      text: 'While the rolls bake and cool, make the cream cheese frosting.',
+      uses: [{ ref: 'frosting' }],
+      whileWaiting: true,
+    },
+    {
       id: 'cool',
       section: 'Frosting',
       title: 'Let them cool',
@@ -215,7 +231,6 @@ export const cinnamonRolls: Recipe = {
       title: 'Frost',
       text: 'When cool, frost with cream cheese frosting.',
       uses: [{ ref: 'frosting' }],
-      tip: 'The cream cheese frosting recipe is coming to the recipe box soon.',
     },
   ],
 };

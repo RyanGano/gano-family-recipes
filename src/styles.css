@@ -1375,3 +1375,24 @@ button {
   padding: 8px 0;
   border-bottom: 1px dashed var(--rule-blue);
 }
+
+/* Link from an ingredient to the recipe that makes it (Ingredient.recipe). */
+.recipe-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  color: var(--tomato-dark);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.cook-recipe-links {
+  margin: 8px 0 0;
+}
+
+.recipe-link--short {
+  font-size: 0.85rem;
+  min-height: 32px;
+  margin-left: 34px;
+}
