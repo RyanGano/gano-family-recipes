@@ -234,4 +234,8 @@ export const cinnamonRolls: Recipe = {
       uses: [{ ref: 'frosting' }],
     },
   ],
+  photos: [
+    { src: 'photos/cinnamon-rolls-frosted.jpg', caption: 'Frosted and ready to eat' },
+    { src: 'photos/cinnamon-rolls-rising.jpg', caption: 'Shaped and risen, ready for the oven' },
+  ],
 };

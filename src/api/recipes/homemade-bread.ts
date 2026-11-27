@@ -175,4 +175,7 @@ export const homemadeBread: Recipe = {
       timers: [{ label: 'Cool in pans', seconds: 10 * 60 }],
     },
   ],
+  photos: [
+    { src: 'photos/homemade-bread-loaf.jpg', caption: 'A finished loaf cooling on the rack' },
+  ],
 };
