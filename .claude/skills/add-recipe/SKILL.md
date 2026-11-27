@@ -50,6 +50,7 @@ Walk the instructions one sentence at a time and decide the cook-mode screens. F
 | Hands-off time measured in hours (rising, chilling, marinating) | Added to the recipe box time ("60 min + 2½ hrs of rising") and a badge on the card | `waitTime` |
 | Anything unusual a cook should know before choosing this recipe ("Needs a candy thermometer"). Not the night before, which stamps itself | Rubber stamp on the recipe box card | `stamps` |
 | An ingredient most kitchens don't keep on hand (orange juice, almond flavoring, buttermilk) | Listed under "What you might need to buy" on the box card and recipe page. Use a string to name the real purchase ("Fresh oranges (for the grated rind)") | `Ingredient.buy` |
+| A cooking term a new cook may not know (knead, burp, punch down) | In cook mode the word is tappable in step text and tips and shows its definition. Add the term once to `src/api/glossary.ts`; every recipe picks it up | `glossary` |
 | "The day/night before", or prep that must sit overnight | "Night before" badge on the step, plus a warning on the card and gather screen. Use `'recommended'` when the recipe works without it | `nightBefore` |
 
 Shape the steps like this:
@@ -57,6 +58,7 @@ Shape the steps like this:
 - One action per screen, with a short title ("Mix the wet ingredients"). Split a sentence that hides two actions, such as heating the oven and greasing the pan.
 - Put the step that uses an ingredient on the screen where it goes in, with the exact (scaled) amount. When an ingredient goes in over several steps, use `fraction` on each use.
 - Before a long wait, move the parallel prep into the wait.
+- Checklists and check-off rows are optional help, so word them as an offer, not an order: "You can tap each one as you add it", never "Tap each one as you add it". The same goes for any UI text about tapping things off.
 
 Then look for a **new feature**: a signal in this recipe that no catalog row covers and that would help someone cooking from a phone. Examples are a rise or rest stage measured in hours, a "repeat for each layer" loop, a candy-thermometer target, or a step that needs a photo. Sketch each candidate as a data field plus what it looks like in cook mode. Only propose one if this recipe actually uses it.
 

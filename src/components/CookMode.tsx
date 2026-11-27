@@ -11,6 +11,7 @@ import { useRecipe } from '../lib/useRecipes';
 import { speak, speechSupported, stopSpeaking, useVoiceCommands, type VoiceCommand } from '../lib/voice';
 import { isVoiceProblem, VoiceHelp } from './VoiceHelp';
 import { Amount } from './Amount';
+import { GlossaryText } from './GlossaryText';
 import { ScalePicker } from './ScalePicker';
 import { TimerTray } from './TimerTray';
 import { WakeToggle } from './WakeToggle';
@@ -372,7 +373,7 @@ function GatherScreen({ recipe, scale, setScale, checked, setChecked }: { recipe
       )}
       <ScalePicker recipe={recipe} scale={scale} onChange={setScale} />
       <p className="cook-hint">
-        Tap each one as you set it out · {gathered} of {recipe.ingredients.length}
+        You can tap each one as you set it out · {gathered} of {recipe.ingredients.length}
       </p>
       {recipe.sections.map((section) => {
         const items = recipe.ingredients.filter((i) => i.section === section);
@@ -472,7 +473,9 @@ function StepScreen({
         </ul>
       ) : null}
 
-      <p className="cook-text">{step.text}</p>
+      <p className="cook-text">
+        <GlossaryText key={step.id} text={step.text} />
+      </p>
 
       {step.checklist?.length ? (
         <ol className="cook-checklist">
@@ -512,7 +515,7 @@ function StepScreen({
 
       {step.tip && (
         <aside className="tip">
-          <span className="tip__label">Tip</span> {step.tip}
+          <span className="tip__label">Tip</span> <GlossaryText key={step.id} text={step.tip} />
         </aside>
       )}
     </>

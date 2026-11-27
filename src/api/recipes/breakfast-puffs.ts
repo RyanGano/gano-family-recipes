@@ -60,7 +60,7 @@ export const breakfastPuffs: Recipe = {
       id: 'combine',
       section: 'Puffs',
       title: 'Stir in the rest, in order',
-      text: 'Stir in each of these one at a time, adding the milk in three parts. Tap each one as you add it.',
+      text: 'Stir in each of these one at a time, adding the milk in three parts. You can tap each one as you add it.',
       checklist: [
         { use: { ref: 'flour' } },
         { use: { ref: 'milk', fraction: 1 / 3, label: 'milk (1st of 3)' } },

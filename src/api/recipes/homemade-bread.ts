@@ -63,7 +63,7 @@ export const homemadeBread: Recipe = {
       id: 'mix',
       section: 'Dough',
       title: 'Mix the dough',
-      text: 'In the mixer, combine the yeast mixture, bread flour, sugar, shortening or margarine, salt and very warm water. Tap each one as you add it.',
+      text: 'In the mixer, combine the yeast mixture, bread flour, sugar, shortening or margarine, salt and very warm water. You can tap each one as you add it.',
       checklist: [
         { text: 'Yeast mixture' },
         { use: { ref: 'flour' } },
