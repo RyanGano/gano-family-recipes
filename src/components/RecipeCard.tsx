@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import type { Recipe } from '../api/types';
-import { formatTimerLength, nightBeforeNotice, scaleIngredient } from '../lib/format';
+import { formatMinutes, formatTimerLength, nightBeforeNotice, recipeStamps, scaleIngredient } from '../lib/format';
 import { toggle, useChecked, useLastStep, useScale } from '../lib/prefs';
 import { href } from '../lib/route';
 import { useRecipe } from '../lib/useRecipes';
 import { Amount } from './Amount';
+import { BuyLink } from './BuyList';
+import { Stamps } from './Stamps';
 import { ScalePicker } from './ScalePicker';
 import { WakeToggle } from './WakeToggle';
 
@@ -49,7 +51,8 @@ function RecipeCardView({ recipe }: { recipe: Recipe }) {
       </nav>
 
       <article className="index-card index-card--full">
-        <header className="card-head">
+        <header className={`card-head ${recipeStamps(recipe).length ? 'has-stamps' : ''}`}>
+          <Stamps stamps={recipeStamps(recipe)} />
           <span className="index-card__category">{recipe.category}</span>
           <h1 className="hand-title">{recipe.title}</h1>
           {recipe.from && <p className="from-line">From the kitchen of <span className="hand">{recipe.from}</span></p>}
@@ -57,8 +60,14 @@ function RecipeCardView({ recipe }: { recipe: Recipe }) {
           <div className="badges">
             {recipe.prepMinutes ? <span className="badge">Prep {recipe.prepMinutes} min</span> : null}
             {recipe.cookMinutes ? <span className="badge">Cook {recipe.cookMinutes} min</span> : null}
+            {recipe.waitTime ? (
+              <span className="badge">
+                {recipe.waitTime.label[0].toUpperCase() + recipe.waitTime.label.slice(1)} {formatMinutes(recipe.waitTime.minutes)}
+              </span>
+            ) : null}
             <span className="badge">{stepCount} steps</span>
           </div>
+          <BuyLink recipe={recipe} />
         </header>
 
         {aheadNotice && (
