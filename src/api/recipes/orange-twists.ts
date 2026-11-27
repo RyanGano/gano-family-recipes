@@ -18,7 +18,7 @@ export const orangeTwists: Recipe = {
     'Small bowl for the frosting',
   ],
   ingredients: [
-    { id: 'yeast', section: 'Roll Dough', quantity: 1, unit: 'package', name: 'yeast' },
+    { id: 'yeast', section: 'Roll Dough', quantity: 1, unit: 'package', name: 'yeast', buy: true },
     { id: 'water', section: 'Roll Dough', quantity: 0.25, unit: 'cup', name: 'warm water' },
     { id: 'sugar', section: 'Roll Dough', quantity: 0.25, unit: 'cup', name: 'sugar' },
     { id: 'salt', section: 'Roll Dough', quantity: 1, unit: 'teaspoon', name: 'salt' },

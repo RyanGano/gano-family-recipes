@@ -9,6 +9,7 @@ export const homemadeBread: Recipe = {
   yield: { amount: 2, unit: 'loaves' },
   prepMinutes: 30,
   cookMinutes: 25,
+  waitTime: { minutes: 105, label: 'rising' },
   sections: ['Dough', 'Loaves'],
   equipment: [
     'Measuring cup',
@@ -18,10 +19,10 @@ export const homemadeBread: Recipe = {
     'Cooling rack',
   ],
   ingredients: [
-    { id: 'yeast', section: 'Dough', quantity: 2.5, unit: 'teaspoon', name: 'yeast', note: '1 package for a full batch' },
+    { id: 'yeast', section: 'Dough', quantity: 2.5, unit: 'teaspoon', name: 'yeast', note: '1 package for a full batch', buy: 'Yeast (1 package)' },
     { id: 'yeast-sugar', section: 'Dough', quantity: 0.75, unit: 'teaspoon', name: 'sugar' },
     { id: 'warm-water', section: 'Dough', quantity: 1, unit: 'cup', name: 'warm water' },
-    { id: 'flour', section: 'Dough', quantity: 2, unit: 'cup', name: 'bread flour' },
+    { id: 'flour', section: 'Dough', quantity: 2, unit: 'cup', name: 'bread flour', buy: 'Bread flour' },
     { id: 'sugar', section: 'Dough', quantity: 0.25, unit: 'cup', name: 'sugar' },
     { id: 'shortening', section: 'Dough', quantity: 0.25, unit: 'cup', name: 'shortening or margarine' },
     { id: 'salt', section: 'Dough', quantity: 3, unit: 'teaspoon', name: 'salt' },
@@ -33,6 +34,7 @@ export const homemadeBread: Recipe = {
       unit: 'cup',
       name: 'more bread flour',
       note: 'as needed',
+      buy: 'Bread flour',
     },
     { id: 'counter-flour', section: 'Dough', name: 'flour', note: 'for the counter' },
     { id: 'grease', section: 'Dough', name: 'shortening', note: 'for greasing' },
