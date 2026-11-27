@@ -125,3 +125,13 @@ export function formatTimerLength(timer: { seconds: number; maxSeconds?: number 
   const unitB = b.split(' ').slice(1).join(' ');
   return unitA === unitB && !a.includes('hr') ? `${a.split(' ')[0]}–${b}` : `${a} – ${b}`;
 }
+
+/** The up-front warning for recipes with night-before steps, or undefined. */
+export function nightBeforeNotice(recipe: Recipe): string | undefined {
+  const ahead = recipe.steps.filter((s) => s.nightBefore);
+  if (!ahead.length) return undefined;
+  const first = recipe.steps.indexOf(ahead[0]) + 1;
+  return ahead.some((s) => s.nightBefore === 'required')
+    ? `Start this the night before (step ${first}).`
+    : `Best started the night before (step ${first}), though it works without it.`;
+}
