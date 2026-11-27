@@ -1,9 +1,9 @@
 {
   "name": "Gano Family Recipe Box",
   "short_name": "Recipes",
-  "start_url": "./",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#5a3a22",
   "theme_color": "#5a3a22",
-  "icons": [{ "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
 }

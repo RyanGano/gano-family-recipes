@@ -108,8 +108,8 @@ Then ask with `AskUserQuestion`: approve, or change something. Loop on their cha
 3. **Verify**:
    - `npm test`. The recipe checks catch bad ingredient references, unused ingredients, bad sections and bad timers.
    - `npm run build`.
-   - Start the dev server (`.claude/launch.json` → `recipes-dev`) and open `/#/recipe/<slug>` at the mobile viewport. Step through every cook-mode screen, start one timer, and check that amounts look right at ½× and 2×.
+   - Start the dev server (`.claude/launch.json` → `recipes-dev`) and open `/recipe/<slug>` at the mobile viewport. Step through every cook-mode screen, start one timer, and check that amounts look right at ½× and 2×.
 4. **Ship**: commit on a branch, push, and open a PR. Then merge it yourself (`gh pr merge --squash --delete-branch`). The user approved the breakdown in stage 4, and merging to `main` deploys the site to GitHub Pages through `.github/workflows/deploy.yml`. Don't merge if you have a serious concern about the recipe: something on it may be unsafe (an undercooked meat, a canning shortcut), an amount looks wrong for what it makes, or a check failed. In that case leave the PR open and tell the user why.
-5. **Confirm the deploy**: watch the Pages run for the merge commit (`gh run watch`) and report the live URL, `https://recipes.ryangano.com/#/recipe/<slug>`.
+5. **Confirm the deploy**: watch the Pages run for the merge commit (`gh run watch`) and report the live URL, `https://recipes.ryangano.com/recipe/<slug>`.
 
 **Done when** tests and the build pass, every cook-mode screen of the new recipe has been viewed on the phone viewport, and the PR is merged and deployed, or left open with the concern explained to the user.
