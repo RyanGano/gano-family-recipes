@@ -3,6 +3,7 @@ import type { Recipe } from '../types';
 export const orangeTwists: Recipe = {
   slug: 'orange-twists',
   title: 'Orange Twists',
+  from: 'Anita Gano',
   category: 'Breakfast',
   tags: ['sweet rolls', 'yeast', 'orange', 'frosted'],
   yield: { amount: 12, unit: 'twists' },
