@@ -11,6 +11,7 @@ import { RecipeLink } from './RecipeLink';
 import { Stamps } from './Stamps';
 import { ScalePicker } from './ScalePicker';
 import { WakeToggle } from './WakeToggle';
+import { handPlaced } from '../lib/handPlaced';
 
 /** The classic recipe card: ingredients and directions on lined paper. */
 export function RecipeCard({ slug }: { slug: string }) {
@@ -44,6 +45,7 @@ function RecipeCardView({ recipe }: { recipe: Recipe }) {
   const screens = useCookSteps(recipe) ?? cookSteps(recipe, []);
   const resumeAt = lastStep > 0 ? screens[lastStep - 1] : undefined;
   const aheadNotice = nightBeforeNotice(recipe);
+  const hero = recipe.photos?.[0];
 
   return (
     <div className="card-page">
@@ -54,9 +56,10 @@ function RecipeCardView({ recipe }: { recipe: Recipe }) {
         <WakeToggle compact />
       </nav>
 
-      <article className="index-card index-card--full">
+      <article className={`index-card index-card--full ${hero ? 'has-photo' : ''}`}>
         <header className={`card-head ${recipeStamps(recipe).length ? 'has-stamps' : ''}`}>
-          <Stamps stamps={recipeStamps(recipe)} />
+          {hero && <img className="card-thumb" style={handPlaced(recipe.slug, { tilt: [1, 5], shift: 5 })} src={`${import.meta.env.BASE_URL}${hero.src}`} alt="" />}
+          <Stamps stamps={recipeStamps(recipe)} seed={recipe.slug} />
           <span className="index-card__category">{recipe.category}</span>
           <h1 className="hand-title">{recipe.title}</h1>
           {recipe.from && <p className="from-line">From the kitchen of <span className="hand">{recipe.from}</span></p>}

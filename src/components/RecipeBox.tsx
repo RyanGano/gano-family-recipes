@@ -4,6 +4,7 @@ import { formatUnit, recipeStamps, timeLine } from '../lib/format';
 import { href } from '../lib/route';
 import { useRecipeList } from '../lib/useRecipes';
 import { BuyLink } from './BuyList';
+import { handPlaced } from '../lib/handPlaced';
 import { Stamps } from './Stamps';
 import { WakeToggle } from './WakeToggle';
 
@@ -65,13 +66,15 @@ export function RecipeBox() {
             const stamps = recipeStamps(r);
             const time = timeLine(r);
             const buys = r.ingredients.some((i) => i.buy);
+            const hero = r.photos?.[0];
             return (
               <li key={r.slug} className="card-stack__item">
                 <a
-                  className={`index-card index-card--link ${stamps.length ? 'has-stamps' : ''} ${buys ? 'has-buy' : ''}`}
+                  className={`index-card index-card--link ${stamps.length ? 'has-stamps' : ''} ${buys ? 'has-buy' : ''} ${hero ? 'has-photo' : ''}`}
                   href={href({ kind: 'recipe', slug: r.slug })}
                 >
-                  <Stamps stamps={stamps} />
+                  {hero && <img className="card-thumb" style={handPlaced(r.slug, { tilt: [1, 5], shift: 5 })} src={`${import.meta.env.BASE_URL}${hero.src}`} alt="" />}
+                  <Stamps stamps={stamps} seed={r.slug} />
                   <span className="index-card__category">{r.category}</span>
                   <span className="index-card__title">{r.title}</span>
                   <span className="index-card__meta">
