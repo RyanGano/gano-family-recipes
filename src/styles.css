@@ -1352,6 +1352,9 @@ button {
 
 .card-stack__item {
   position: relative;
+  /* Don't stretch to a taller neighbour in the row: the buy link is pinned to
+     this item's bottom, so the item must end where its card ends. */
+  align-self: start;
 }
 
 .index-card.has-buy {
