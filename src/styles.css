@@ -875,6 +875,47 @@ button {
   margin-right: 4px;
 }
 
+.term {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline dotted var(--tomato);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.term.is-open {
+  background: rgba(246, 215, 122, 0.55);
+  border-radius: 3px;
+}
+
+.term-def {
+  position: relative;
+  display: block;
+  margin-top: 10px;
+  padding: 10px 36px 10px 12px;
+  background: rgba(246, 215, 122, 0.35);
+  border-left: 5px solid var(--butter);
+  border-radius: 6px;
+  font-size: 0.85em;
+  font-style: normal;
+}
+
+.term-def__close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: none;
+  border: 0;
+  font-size: 1em;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
 .cook-howto {
   margin-top: 18px;
   font-size: 0.75em;

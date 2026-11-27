@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { allRecipes } from './recipes';
+import { splitGlossary } from '../lib/glossary';
 import {
   buyList,
   formatAmount,
@@ -166,5 +167,25 @@ describe('voice commands', () => {
 describe('speech text', () => {
   it('reads fractions and temperatures naturally', () => {
     expect(forSpeech('1½ cups and ½ teaspoon at 350°F')).toBe('1 and 1/2 cups and 1/2 teaspoon at 350 degrees');
+  });
+});
+
+describe('glossary', () => {
+  it('marks every form of a term, ignoring case', () => {
+    const pieces = splitGlossary('Kneading is fun. Seal the lid, then burp it.');
+    expect(pieces.map((p) => (typeof p === 'string' ? p : `[${p.term.term}:${p.text}]`))).toEqual([
+      '[Knead:Kneading]',
+      ' is fun. Seal the lid, then ',
+      '[Burp:burp]',
+      ' it.',
+    ]);
+  });
+
+  it('prefers the longest match and leaves partial words alone', () => {
+    const pieces = splitGlossary('Punch the dough down; the kneader waits.');
+    expect(pieces.map((p) => (typeof p === 'string' ? p : `[${p.term.term}:${p.text}]`))).toEqual([
+      '[Punch down:Punch the dough down]',
+      '; the kneader waits.',
+    ]);
   });
 });
