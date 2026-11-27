@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useRef, useState, type TouchEvent } from 'react';
-import type { Recipe, Step } from '../api/types';
-import { findIngredient, formatTimerLength, nightBeforeNotice, scaleIngredient, scaleUse } from '../lib/format';
+import type { Recipe } from '../api/types';
+import type { CookStep } from '../lib/cookSteps';
+import { formatTimerLength, nightBeforeNotice, scaleIngredient, scaleUse } from '../lib/format';
 import { toggle, useChecked, useLastStep, useScale, useTextSize } from '../lib/prefs';
 import { go, href } from '../lib/route';
 import { playBlip } from '../lib/sound';
 import { ingredientsSpeech, screenSpeech } from '../lib/speech';
 import { parseBoolean, useStored } from '../lib/storage';
 import { useTimers } from '../lib/timers';
-import { useRecipe } from '../lib/useRecipes';
+import { useCookSteps, useRecipe } from '../lib/useRecipes';
 import { speak, speechSupported, stopSpeaking, useVoiceCommands, type VoiceCommand } from '../lib/voice';
 import { isVoiceProblem, VoiceHelp } from './VoiceHelp';
 import { Amount } from './Amount';
 import { GlossaryText } from './GlossaryText';
-import { RecipeLink } from './RecipeLink';
 import { ScalePicker } from './ScalePicker';
 import { TimerTray } from './TimerTray';
 import { WakeToggle } from './WakeToggle';
@@ -26,19 +26,21 @@ import { WakeToggle } from './WakeToggle';
  */
 export function CookMode({ slug, step }: { slug: string; step: number }) {
   const recipe = useRecipe(slug);
-  if (recipe.kind === 'loading') return <div className="cook" />;
+  const screens = useCookSteps(recipe.kind === 'ready' ? recipe.value : undefined);
   if (recipe.kind === 'missing') {
     go({ kind: 'box' }, { replace: true });
     return null;
   }
-  return <CookView recipe={recipe.value} requested={step} />;
+  if (recipe.kind === 'loading' || !screens) return <div className="cook" />;
+  return <CookView recipe={recipe.value} screens={screens} requested={step} />;
 }
 
-function CookView({ recipe, requested }: { recipe: Recipe; requested: number }) {
-  const total = recipe.steps.length;
+function CookView({ recipe, screens, requested }: { recipe: Recipe; screens: CookStep[]; requested: number }) {
+  const total = screens.length;
   const last = total + 1;
   const index = Math.min(Math.max(requested, 0), last);
-  const step: Step | undefined = index >= 1 && index <= total ? recipe.steps[index - 1] : undefined;
+  const screen: CookStep | undefined = index >= 1 && index <= total ? screens[index - 1] : undefined;
+  const step = screen?.step;
 
   const [scale, setScale] = useScale(recipe.slug);
   const [checked, setChecked] = useChecked(recipe.slug);
@@ -74,7 +76,7 @@ function CookView({ recipe, requested }: { recipe: Recipe; requested: number }) 
 
   // Read each new screen aloud when "read aloud" is on.
   useEffect(() => {
-    if (readAloud) say(screenSpeech(recipe, index, scale));
+    if (readAloud) say(screenSpeech(recipe, screens, index, scale));
     return () => stopSpeaking();
   }, [index, readAloud]);
 
@@ -106,10 +108,10 @@ function CookView({ recipe, requested }: { recipe: Recipe; requested: number }) 
           back();
           break;
         case 'repeat':
-          say(screenSpeech(recipe, index, scale));
+          say(screenSpeech(recipe, screens, index, scale));
           break;
         case 'ingredients':
-          say(ingredientsSpeech(recipe, index, scale));
+          say(ingredientsSpeech(recipe, screens, index, scale));
           break;
         case 'timer':
           startStepTimer();
@@ -180,7 +182,7 @@ function CookView({ recipe, requested }: { recipe: Recipe; requested: number }) 
     bodyRef.current?.scrollTo(0, 0);
   }, [index]);
 
-  const nextStep = index < total ? recipe.steps[index] : undefined;
+  const nextStep = index < total ? screens[index].step : undefined;
   const nextLabel = index === 0 ? 'Start step 1' : index === total ? 'Finish' : index > total ? 'Done' : 'Next';
 
   // Called straight from the tap: phones only allow the microphone prompt during a tap.
@@ -194,7 +196,7 @@ function CookView({ recipe, requested }: { recipe: Recipe; requested: number }) 
   };
   const toggleReadAloud = () => {
     if (readAloud) stopSpeaking();
-    else say(screenSpeech(recipe, index, scale));
+    else say(screenSpeech(recipe, screens, index, scale));
     setReadAloud(!readAloud);
   };
 
@@ -207,7 +209,7 @@ function CookView({ recipe, requested }: { recipe: Recipe; requested: number }) 
         <button className="cook-top__title" onClick={() => setShowSteps(true)} aria-label="Show all steps">
           <span className="cook-top__name">{recipe.title}</span>
           <span className="cook-top__count">
-            {index === 0 ? 'Get ready' : index > total ? 'Done!' : `Step ${index} of ${total}`} ▾
+            {index === 0 ? 'Get ready' : !screen ? 'Done!' : `Step ${screen.num} of ${recipe.steps.length}`} ▾
           </span>
         </button>
         <div className="cook-top__tools">
@@ -245,12 +247,12 @@ function CookView({ recipe, requested }: { recipe: Recipe; requested: number }) 
       </header>
 
       <div className="progress" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={Math.min(index, total)}>
-        {recipe.steps.map((s, i) => (
+        {screens.map((s, i) => (
           <button
-            key={s.id}
-            className={`progress__seg ${i + 1 < index ? 'done' : ''} ${i + 1 === index ? 'current' : ''}`}
+            key={s.key}
+            className={`progress__seg ${s.part ? 'progress__seg--part' : ''} ${i + 1 < index ? 'done' : ''} ${i + 1 === index ? 'current' : ''}`}
             onClick={() => goTo(i + 1)}
-            aria-label={`Go to step ${i + 1}: ${s.title}`}
+            aria-label={`Go to step ${s.num}: ${s.step.title}`}
           />
         ))}
       </div>
@@ -263,11 +265,11 @@ function CookView({ recipe, requested }: { recipe: Recipe; requested: number }) 
 
       <div className="cook-body" ref={bodyRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         <div className="cook-card">
-          {index === 0 && <GatherScreen recipe={recipe} scale={scale} setScale={setScale} checked={checked} setChecked={setChecked} />}
-          {step && (
+          {index === 0 && <GatherScreen recipe={recipe} screens={screens} scale={scale} setScale={setScale} checked={checked} setChecked={setChecked} />}
+          {screen && (
             <StepScreen
-              recipe={recipe}
-              step={step}
+              recipeSlug={recipe.slug}
+              screen={screen}
               index={index}
               scale={scale}
               checked={checked}
@@ -333,13 +335,13 @@ function CookView({ recipe, requested }: { recipe: Recipe; requested: number }) 
                   <span className="step-list__num">·</span> Gather ingredients
                 </button>
               </li>
-              {recipe.steps.map((s, i) => (
-                <li key={s.id}>
+              {screens.map((s, i) => (
+                <li key={s.key} className={s.part ? 'step-list__part' : undefined}>
                   <button className={index === i + 1 ? 'is-current' : ''} onClick={() => { goTo(i + 1); setShowSteps(false); }}>
-                    <span className="step-list__num">{i + 1}</span>
+                    <span className="step-list__num">{s.num}</span>
                     <span>
-                      {s.title}
-                      <small>{s.section}</small>
+                      {s.step.title}
+                      <small>{s.part ? s.part.recipe.title : s.step.section}</small>
                     </span>
                   </button>
                 </li>
@@ -360,8 +362,24 @@ interface CheckProps {
   setChecked: (next: string[]) => void;
 }
 
-function GatherScreen({ recipe, scale, setScale, checked, setChecked }: { recipe: Recipe; scale: number; setScale: (s: number) => void } & CheckProps) {
-  const gathered = recipe.ingredients.filter((i) => checked.includes(`ing:${i.id}`)).length;
+function GatherScreen({
+  recipe,
+  screens,
+  scale,
+  setScale,
+  checked,
+  setChecked,
+}: { recipe: Recipe; screens: CookStep[]; scale: number; setScale: (s: number) => void } & CheckProps) {
+  // A folded-in recipe's ingredients are listed under the ingredient it makes.
+  const madeFrom = (ingredientId: string) => screens.find((s) => s.part?.ingredient.id === ingredientId);
+  const rows = recipe.ingredients.flatMap((ing) => {
+    const folded = madeFrom(ing.id);
+    return [
+      `ing:${ing.id}`,
+      ...(folded?.part ? folded.part.recipe.ingredients.map((x) => `ing:${ing.id}/${x.id}`) : []),
+    ];
+  });
+  const gathered = rows.filter((id) => checked.includes(id)).length;
   const aheadNotice = nightBeforeNotice(recipe);
   return (
     <>
@@ -374,7 +392,7 @@ function GatherScreen({ recipe, scale, setScale, checked, setChecked }: { recipe
       )}
       <ScalePicker recipe={recipe} scale={scale} onChange={setScale} />
       <p className="cook-hint">
-        You can tap each one as you set it out · {gathered} of {recipe.ingredients.length}
+        You can tap each one as you set it out · {gathered} of {rows.length}
       </p>
       {recipe.sections.map((section) => {
         const items = recipe.ingredients.filter((i) => i.section === section);
@@ -386,6 +404,7 @@ function GatherScreen({ recipe, scale, setScale, checked, setChecked }: { recipe
               {items.map((ing) => {
                 const id = `ing:${ing.id}`;
                 const done = checked.includes(id);
+                const folded = madeFrom(ing.id);
                 return (
                   <li key={ing.id}>
                     <button className={`check-row check-row--big ${done ? 'is-done' : ''}`} onClick={() => setChecked(toggle(checked, id))} aria-pressed={done}>
@@ -394,6 +413,24 @@ function GatherScreen({ recipe, scale, setScale, checked, setChecked }: { recipe
                         <Amount line={scaleIngredient(ing, { scale })} />
                       </span>
                     </button>
+                    {folded?.part && (
+                      <ul className="cook-ingredients cook-ingredients--made-from" aria-label={`For the ${ing.name}`}>
+                        {folded.part.recipe.ingredients.map((x) => {
+                          const subId = `ing:${ing.id}/${x.id}`;
+                          const subDone = checked.includes(subId);
+                          return (
+                            <li key={x.id}>
+                              <button className={`check-row ${subDone ? 'is-done' : ''}`} onClick={() => setChecked(toggle(checked, subId))} aria-pressed={subDone}>
+                                <span className="box" aria-hidden>{subDone ? '✓' : ''}</span>
+                                <span>
+                                  <Amount line={scaleIngredient(x, { scale: scale * folded.factor })} />
+                                </span>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
                   </li>
                 );
               })}
@@ -420,32 +457,36 @@ function GatherScreen({ recipe, scale, setScale, checked, setChecked }: { recipe
 }
 
 function StepScreen({
-  recipe,
-  step,
+  recipeSlug,
+  screen,
   index,
-  scale,
+  scale: chosenScale,
   checked,
   setChecked,
   onStartTimer,
 }: {
-  recipe: Recipe;
-  step: Step;
+  /** The recipe being cooked; timers belong to it even on folded-in steps. */
+  recipeSlug: string;
+  screen: CookStep;
   index: number;
   scale: number;
   onStartTimer: () => void;
 } & CheckProps) {
   const { timers } = useTimers();
+  const { step, owner: recipe, key, num, part } = screen;
+  const scale = chosenScale * screen.factor;
   return (
     <>
       <p className="cook-section">
         {step.section}
+        {part && <span className="badge badge--soft">{part.recipe.title} · {part.n} of {part.of}</span>}
         {step.whileWaiting && <span className="badge badge--soft">while you wait</span>}
         {step.nightBefore && (
           <span className="badge badge--night">🌙 night before{step.nightBefore === 'recommended' ? ' · optional' : ''}</span>
         )}
       </p>
       <h1 className="cook-title">
-        <span className="cook-title__num">{index}</span>
+        <span className="cook-title__num">{num}</span>
         {step.title}
       </h1>
 
@@ -458,7 +499,7 @@ function StepScreen({
       {step.uses?.length ? (
         <ul className="cook-ingredients">
           {step.uses.map((u) => {
-            const id = `add:${step.id}:${u.ref}`;
+            const id = `add:${key}:${u.ref}`;
             const done = checked.includes(id);
             return (
               <li key={u.ref}>
@@ -474,23 +515,14 @@ function StepScreen({
         </ul>
       ) : null}
 
-      {step.uses
-        ?.map((u) => findIngredient(recipe, u.ref))
-        .filter((ing) => ing.recipe)
-        .map((ing) => (
-          <p key={ing.id} className="cook-recipe-links">
-            <RecipeLink ingredient={ing} scale={scale} />
-          </p>
-        ))}
-
       <p className="cook-text">
-        <GlossaryText key={step.id} text={step.text} />
+        <GlossaryText key={key} text={step.text} />
       </p>
 
       {step.checklist?.length ? (
         <ol className="cook-checklist">
           {step.checklist.map((c, i) => {
-            const id = `chk:${step.id}:${i}`;
+            const id = `chk:${key}:${i}`;
             const done = checked.includes(id);
             return (
               <li key={id}>
@@ -505,7 +537,7 @@ function StepScreen({
       ) : null}
 
       {step.timers?.map((t) => {
-        const active = timers.find((a) => a.recipeSlug === recipe.slug && a.step === index && a.label === t.label);
+        const active = timers.find((a) => a.recipeSlug === recipeSlug && a.step === index && a.label === t.label);
         return (
           <div key={t.label} className="step-timer">
             {active ? (
@@ -525,7 +557,7 @@ function StepScreen({
 
       {step.tip && (
         <aside className="tip">
-          <span className="tip__label">Tip</span> <GlossaryText key={step.id} text={step.tip} />
+          <span className="tip__label">Tip</span> <GlossaryText key={key} text={step.tip} />
         </aside>
       )}
     </>

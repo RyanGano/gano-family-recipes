@@ -154,4 +154,10 @@ export interface Step {
    * still works without it ("they turn out better").
    */
   nightBefore?: 'required' | 'recommended';
+  /**
+   * Id of an ingredient that links to another recipe (`Ingredient.recipe`). Cook mode
+   * plays that recipe's steps right after this one, numbered 20a, 20b, ..., scaled to
+   * the number of batches, so the cook never leaves this recipe.
+   */
+  makesRecipe?: string;
 }

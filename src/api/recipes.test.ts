@@ -14,6 +14,8 @@ import {
   timeLine,
 } from '../lib/format';
 import { matchCommand } from '../lib/voice';
+import { cookSteps } from '../lib/cookSteps';
+import { cinnamonRolls } from './recipes/cinnamon-rolls';
 import { forSpeech } from '../lib/speech';
 import { breakfastPuffs } from './recipes/breakfast-puffs';
 import { orangeTwists } from './recipes/orange-twists';
@@ -59,6 +61,13 @@ describe.each(allRecipes.map((r) => [r.slug, r] as const))('recipe %s', (_slug, 
       expect(allRecipes.map((r) => r.slug), `ingredient ${i.id} links to ${i.recipe}`).toContain(i.recipe);
       expect(i.recipe).not.toBe(recipe.slug);
       expect(i.unit, `ingredient ${i.id} should be measured in batches`).toBe('batch');
+    }
+  });
+
+  it('folds in only linked ingredients', () => {
+    for (const s of recipe.steps.filter((x) => x.makesRecipe)) {
+      const ing = recipe.ingredients.find((i) => i.id === s.makesRecipe);
+      expect(ing?.recipe, `${s.id} makesRecipe → ${s.makesRecipe}`).toBeTruthy();
     }
   });
 
@@ -204,5 +213,33 @@ describe('glossary', () => {
       '[Punch down:Punch the dough down]',
       '; the kneader waits.',
     ]);
+  });
+});
+
+describe('cookSteps', () => {
+  const screens = cookSteps(cinnamonRolls, allRecipes);
+
+  it('plays the frosting steps right after "Make the frosting", numbered 20a–20e', () => {
+    const at = screens.findIndex((s) => s.step.id === 'make-frosting');
+    expect(screens.slice(at, at + 7).map((s) => `${s.num} ${s.step.title}`)).toEqual([
+      '20 Make the frosting',
+      '20a Soften the cream cheese and butter',
+      '20b Beat until smooth',
+      '20c Beat in the vanilla',
+      '20d Add the powdered sugar',
+      '20e Beat until fluffy',
+      '21 Let them cool',
+    ]);
+    expect(screens).toHaveLength(cinnamonRolls.steps.length + 5);
+  });
+
+  it('scales folded-in amounts by the batches of frosting', () => {
+    const vanilla = screens.find((s) => s.num === '20c');
+    const use = vanilla?.step.uses?.[0];
+    expect(vanilla && use && scaleUse(vanilla.owner, use, 0.5 * vanilla.factor).amount).toBe('¾ teaspoon');
+  });
+
+  it('folds in nothing when the linked recipe is missing', () => {
+    expect(cookSteps(cinnamonRolls, [])).toHaveLength(cinnamonRolls.steps.length);
   });
 });

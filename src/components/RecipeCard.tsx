@@ -3,7 +3,8 @@ import type { Recipe } from '../api/types';
 import { formatMinutes, formatTimerLength, nightBeforeNotice, recipeStamps, scaleIngredient } from '../lib/format';
 import { toggle, useChecked, useLastStep, useScale } from '../lib/prefs';
 import { href } from '../lib/route';
-import { useRecipe } from '../lib/useRecipes';
+import { cookSteps, screenOf } from '../lib/cookSteps';
+import { useCookSteps, useRecipe } from '../lib/useRecipes';
 import { Amount } from './Amount';
 import { BuyLink } from './BuyList';
 import { RecipeLink } from './RecipeLink';
@@ -39,7 +40,9 @@ function RecipeCardView({ recipe }: { recipe: Recipe }) {
   const [checked, setChecked] = useChecked(recipe.slug);
   const [lastStep] = useLastStep(recipe.slug);
   const stepCount = recipe.steps.length;
-  const canResume = lastStep > 0 && lastStep <= stepCount;
+  // Cook mode numbers its screens with linked recipes folded in, so card steps map through it.
+  const screens = useCookSteps(recipe) ?? cookSteps(recipe, []);
+  const resumeAt = lastStep > 0 ? screens[lastStep - 1] : undefined;
   const aheadNotice = nightBeforeNotice(recipe);
 
   return (
@@ -81,9 +84,9 @@ function RecipeCardView({ recipe }: { recipe: Recipe }) {
           <a className="btn btn--primary btn--big" href={href({ kind: 'cook', slug: recipe.slug, step: 0 })}>
             Start cooking · step by step
           </a>
-          {canResume && (
+          {resumeAt && (
             <a className="btn btn--ghost" href={href({ kind: 'cook', slug: recipe.slug, step: lastStep })}>
-              Pick up at step {lastStep}
+              Pick up at step {resumeAt.num}
             </a>
           )}
         </div>
@@ -110,7 +113,7 @@ function RecipeCardView({ recipe }: { recipe: Recipe }) {
                             <Amount line={scaleIngredient(ing, { scale })} />
                           </span>
                         </button>
-                        <RecipeLink ingredient={ing} scale={scale} short />
+                        <RecipeLink ingredient={ing} scale={scale} />
                       </li>
                     );
                   })}
@@ -149,7 +152,7 @@ function RecipeCardView({ recipe }: { recipe: Recipe }) {
                     const stepNumber = recipe.steps.indexOf(s) + 1;
                     return (
                       <li key={s.id} value={stepNumber}>
-                        <a className="direction" href={href({ kind: 'cook', slug: recipe.slug, step: stepNumber })}>
+                        <a className="direction" href={href({ kind: 'cook', slug: recipe.slug, step: screenOf(screens, s) })}>
                           {s.nightBefore && <span className="badge badge--night">🌙 Night before</span>}
                           {s.text}
                           {s.timers?.map((t) => (

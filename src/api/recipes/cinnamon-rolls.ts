@@ -215,8 +215,9 @@ export const cinnamonRolls: Recipe = {
       id: 'make-frosting',
       section: 'Frosting',
       title: 'Make the frosting',
-      text: 'While the rolls bake and cool, make the cream cheese frosting.',
+      text: 'While the rolls bake and cool, make the cream cheese frosting. Its steps come next.',
       uses: [{ ref: 'frosting' }],
+      makesRecipe: 'frosting',
       whileWaiting: true,
     },
     {
