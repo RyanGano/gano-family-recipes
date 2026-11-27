@@ -117,7 +117,7 @@ export const cinnamonRolls: Recipe = {
       id: 'rise-1',
       section: 'Dough',
       title: 'Let it rise in the oven',
-      text: 'Place the dough in a greased plastic bowl. Seal the lid, then burp it: lift one edge, press the extra air out, and seal it again. Set the bowl on a hot pad or towel in the warm oven, and let the dough rise until doubled.',
+      text: 'Place the dough in a greased plastic bowl. Seal the lid and burp it. Set the bowl on a hot pad or towel in the warm oven, and let the dough rise until doubled.',
       timers: [{ label: 'First rise', seconds: 45 * 60, maxSeconds: 60 * 60, doneWhen: 'doubled, and a finger pressed an inch in leaves a dent' }],
       tip: "The hot pad keeps the plastic bowl from melting on the oven rack. The time is a guide: the dough is ready when you press a finger in about an inch and the dent doesn't spring back.",
     },
