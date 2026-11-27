@@ -1321,12 +1321,8 @@ button {
   line-height: 1.25;
   text-align: center;
   text-transform: uppercase;
-  transform: rotate(7deg);
+  transform: translate(var(--dx, 0), var(--dy, 0)) rotate(var(--tilt, 7deg));
   opacity: 0.85;
-}
-
-.stamp:nth-child(2n) {
-  transform: rotate(-4deg);
 }
 
 .has-stamps .index-card__title,
@@ -1415,4 +1411,44 @@ button {
   margin: 0 0 8px 14px;
   padding: 0 0 0 12px;
   font-size: 0.9em;
+}
+
+/* ---------- snapshot of the dish, stuck in the top corner ---------- */
+.card-thumb {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 2;
+  width: 84px;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: 4px solid #fff;
+  border-bottom-width: 12px;
+  border-radius: 2px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transform: translate(var(--dx, 0), var(--dy, 0)) rotate(var(--tilt, 4deg));
+  pointer-events: none;
+}
+
+.index-card--full .card-thumb {
+  width: 112px;
+}
+
+.has-photo .index-card__title,
+.has-photo .hand-title {
+  padding-right: 120px;
+}
+
+.index-card--full.has-photo .hand-title {
+  padding-right: 156px;
+}
+
+/* Stamps sit on top of the snapshot rather than beside it, so narrow screens keep the room. */
+.has-photo .stamps {
+  z-index: 3;
+}
+
+/* Over a photo, give the stamp a scrap of paper so it stays readable. */
+.has-photo .stamp {
+  background: rgba(250, 246, 235, 0.9);
 }
