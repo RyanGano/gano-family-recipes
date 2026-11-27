@@ -127,7 +127,7 @@ export const homemadeBread: Recipe = {
         { text: 'Tuck the ends under' },
         { text: 'Place in a greased pan' },
       ],
-      tip: 'Dinner rolls: shape the dough into rolls instead of loaves. Cinnamon bread: after rolling out each rectangle, spread it with butter and sprinkle it with cinnamon-sugar, then roll it up.',
+      tip: 'Dinner rolls: instead of loaves, shape the dough into balls about 2 inches across. Cinnamon bread: after rolling out each rectangle, spread it with butter and sprinkle it with cinnamon-sugar, then roll it up.',
     },
     {
       id: 'rise-2',
