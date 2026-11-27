@@ -5,7 +5,7 @@ description: Add a family recipe to the Gano recipe box site from a photo or pas
 
 # Add a recipe
 
-You are turning a family recipe into a cook-mode recipe for this site. In cook mode each step fills a phone screen with its ingredient amounts, so the work is mostly breaking the recipe into good steps. Run the stages in order. Stage 4 ends on the user's approval, and nothing gets written before that.
+You are turning a family recipe into a cook-mode recipe for this site. In cook mode each step fills a phone screen with its ingredient amounts, so the work is mostly breaking the recipe into good steps. Run the stages in order. Stage 4 ends on the user's approval, and nothing gets written before that. After that approval, build and ship through to the live site without asking again.
 
 The data model is [`src/api/types.ts`](../../../src/api/types.ts). Read it before stage 3. Its comments say what each field does. [`src/api/recipes/breakfast-puffs.ts`](../../../src/api/recipes/breakfast-puffs.ts) is the worked example. It shows split sections, an ordered checklist with a liquid added in thirds, a range timer, and coating steps done while the puffs bake.
 
@@ -83,6 +83,7 @@ Then ask with `AskUserQuestion`: approve, or change something. Loop on their cha
    - `npm test`. The recipe checks catch bad ingredient references, unused ingredients, bad sections and bad timers.
    - `npm run build`.
    - Start the dev server (`.claude/launch.json` → `recipes-dev`) and open `/gano-family-recipes/#/recipe/<slug>` at the mobile viewport. Step through every cook-mode screen, start one timer, and check that amounts look right at ½× and 2×.
-4. **Ship**: commit on a branch, push, and open a PR. Merging to `main` deploys the site to GitHub Pages through `.github/workflows/deploy.yml`.
+4. **Ship**: commit on a branch, push, and open a PR. Then merge it yourself (`gh pr merge --squash --delete-branch`). The user approved the breakdown in stage 4, and merging to `main` deploys the site to GitHub Pages through `.github/workflows/deploy.yml`. Don't merge if you have a serious concern about the recipe: something on it may be unsafe (an undercooked meat, a canning shortcut), an amount looks wrong for what it makes, or a check failed. In that case leave the PR open and tell the user why.
+5. **Confirm the deploy**: watch the Pages run for the merge commit (`gh run watch`) and report the live URL, `https://ryangano.github.io/gano-family-recipes/#/recipe/<slug>`.
 
-**Done when** tests and the build pass, every cook-mode screen of the new recipe has been viewed on the phone viewport, and the PR is open.
+**Done when** tests and the build pass, every cook-mode screen of the new recipe has been viewed on the phone viewport, and the PR is merged and deployed, or left open with the concern explained to the user.
