@@ -44,6 +44,7 @@ Walk the instructions one sentence at a time and decide the cook-mode screens. F
 | Oven or stove heat | Temperature badge | `temperature` |
 | Additions in a set order, or alternating ("flour, some milk, …") | Numbered tap-off checklist with per-item amounts | `checklist` (with `use.fraction` and `use.label`) |
 | Ingredients used in this step | Amounts on screen, scaled, tap to check off | `uses` |
+| An amount given as a range ("6 to 7½ cups flour"), or one ingredient added in measured parts ("2 cups now, the rest later") | One ingredient line reading "6–7½ cups"; each step shows its own scaled part ("2 cups", then "4–5½ cups") | `Ingredient.maxQuantity`, `use.quantity` / `use.maxQuantity` |
 | Work that fits inside a wait ("meanwhile", or a coating made while it bakes) | Reorder it to sit after the timer step, with a "while you wait" badge | `whileWaiting` |
 | A hint, warning or family trick | Tip box | `tip` |
 | Equipment worth setting out first | Shown on the "gather" screen | `equipment` |

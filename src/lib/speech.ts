@@ -13,11 +13,12 @@ const GLYPHS: Record<string, string> = {
   '⅞': '7/8',
 };
 
-/** "1½ cups" → "1 and 1/2 cups", "350°F" → "350 degrees", "2½ × 1¼" → "2 and 1/2 by 1 and 1/4". */
+/** "1½ cups" → "1 and 1/2 cups", "6–7½" → "6 to 7 and 1/2", "350°F" → "350 degrees", "2½ × 1¼" → "2 and 1/2 by 1 and 1/4". */
 export function forSpeech(text: string): string {
   return text
     .replace(/(\d)([⅛¼⅓⅜½⅝⅔¾⅞])/g, (_, d: string, g: string) => `${d} and ${GLYPHS[g]}`)
     .replace(/[⅛¼⅓⅜½⅝⅔¾⅞]/g, (g) => GLYPHS[g] ?? g)
+    .replace(/(\d)\s?–\s?(\d)/g, '$1 to $2')
     .replace(/°\s?F\b/g, ' degrees')
     .replace(/°\s?C\b/g, ' degrees Celsius')
     .replace(/\s×\s/g, ' by ')

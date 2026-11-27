@@ -66,16 +66,26 @@ export interface ScaledLine {
 
 export function scaleIngredient(
   ingredient: Ingredient,
-  { scale, fraction = 1, label }: { scale: number; fraction?: number; label?: string },
+  {
+    scale,
+    fraction = 1,
+    label,
+    quantity,
+    maxQuantity,
+  }: { scale: number; fraction?: number; label?: string; quantity?: number; maxQuantity?: number },
 ): ScaledLine {
-  if (ingredient.quantity === undefined) {
+  const base = quantity ?? ingredient.quantity;
+  if (base === undefined) {
     return { amount: '', name: label ?? ingredient.name, note: ingredient.note };
   }
-  const value = ingredient.quantity * scale * fraction;
-  const amount = ingredient.unit
-    ? `${formatAmount(value)} ${formatUnit(ingredient.unit, value)}`
-    : formatAmount(value);
-  const name = !ingredient.unit && !isPlural(value) && ingredient.singular ? ingredient.singular : ingredient.name;
+  const top = quantity !== undefined ? maxQuantity : ingredient.maxQuantity;
+  const factor = scale * (quantity !== undefined ? 1 : fraction);
+  const value = base * factor;
+  const high = top === undefined ? undefined : top * factor;
+  const number = high === undefined ? formatAmount(value) : `${formatAmount(value)}–${formatAmount(high)}`;
+  const amount = ingredient.unit ? `${number} ${formatUnit(ingredient.unit, high ?? value)}` : number;
+  const name =
+    !ingredient.unit && !isPlural(high ?? value) && ingredient.singular ? ingredient.singular : ingredient.name;
   return {
     amount,
     name: label ?? name,
@@ -94,6 +104,8 @@ export function scaleUse(recipe: Recipe, use: IngredientUse, scale: number): Sca
     scale,
     fraction: use.fraction,
     label: use.label,
+    quantity: use.quantity,
+    maxQuantity: use.maxQuantity,
   });
 }
 

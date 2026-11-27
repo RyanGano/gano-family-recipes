@@ -75,6 +75,8 @@ export interface Ingredient {
   section: string;
   /** Omit for "to taste" style ingredients. */
   quantity?: number;
+  /** Top of a range, e.g. 7.5 with `quantity: 6` shows "6–7½ cups". */
+  maxQuantity?: number;
   /** Units listed in `src/lib/format.ts` get automatic plurals. */
   unit?: string;
   name: string;
@@ -96,6 +98,13 @@ export interface IngredientUse {
   ref: string;
   /** Fraction of the ingredient used in this step (e.g. 1/3 of the milk). */
   fraction?: number;
+  /**
+   * The part used in this step as an amount, in the ingredient's unit, in place of
+   * `fraction`: 2 cups of the 6–7½ cups of flour, then `quantity: 4, maxQuantity: 5.5`
+   * for the rest. Scaled like everything else.
+   */
+  quantity?: number;
+  maxQuantity?: number;
   /** Replaces the ingredient name, e.g. "milk (last of 3)". */
   label?: string;
 }
