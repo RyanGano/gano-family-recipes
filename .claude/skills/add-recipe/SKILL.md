@@ -28,7 +28,7 @@ List every gap. Then ask about them with `AskUserQuestion` (up to 4 questions pe
 - Who the recipe is from, a line of family story if there is one, and a category (the `Category` union in `types.ts`).
 - Anything illegible from stage 1.
 
-A gap the user can't fill stays out of the recipe or becomes a `tip` worded as a suggestion ("Most versions bake about 30 min; check at 25"). Never present invented facts as the family's recipe.
+A gap the user can't fill stays out of the recipe or becomes a `tip` worded as a suggestion ("Most versions bake about 30 min; check at 25"). Never present invented facts as the family's recipe. Tips and step text say what to do, never what the card leaves out: write "Start with about 1 cup powdered sugar", not "The card gives no amounts."
 
 **Done when** every gap on your list has an answer, or the user has said to leave it out.
 
