@@ -1,0 +1,72 @@
+<!doctype html>
+<!--
+  Source for public/og-image.png, the link-preview image (Open Graph / Twitter card).
+  It is the home page's brass name plate on the wood box, scaled up to 1200x630.
+  Regenerate after changing it (from the repo root):
+
+    & "C:\Program Files\Google\Chrome\Application\chrome.exe" --headless --hide-scrollbars `
+      --window-size=1200,630 --virtual-time-budget=5000 `
+      --screenshot="$PWD\public\og-image.png" "file:///$PWD/scripts/og-image.html"
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Special+Elite&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      /* Colours and textures copied from src/styles.css (body, .box-lid__plate). */
+      html,
+      body {
+        margin: 0;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+      }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #6b4226;
+        background-image:
+          repeating-linear-gradient(92deg, rgba(0, 0, 0, 0.06) 0 4px, transparent 4px 18px),
+          repeating-linear-gradient(88deg, rgba(255, 255, 255, 0.035) 0 2px, transparent 2px 46px),
+          linear-gradient(180deg, #8a5a36, #6b4226 40%, #4a2e1a);
+      }
+      .plate {
+        text-align: center;
+        padding: 34px 96px 40px;
+        background: linear-gradient(160deg, #e8c88d, #c9a36a 45%, #a37e45);
+        border-radius: 30px;
+        box-shadow:
+          inset 0 3px 0 rgba(255, 255, 255, 0.6),
+          inset 0 -6px 12px rgba(0, 0, 0, 0.25),
+          0 10px 28px rgba(0, 0, 0, 0.45);
+        color: #3b2614;
+        border: 3px solid #7a5a2c;
+      }
+      .small {
+        margin: 0;
+        font-family: 'Special Elite', 'Courier New', monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-size: 44px;
+      }
+      .title {
+        margin: 0;
+        font-family: 'Caveat', cursive;
+        font-weight: 700;
+        font-size: 168px;
+        line-height: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="plate">
+      <p class="small">The</p>
+      <h1 class="title">Gano Family</h1>
+      <p class="small">Recipe Box</p>
+    </div>
+  </body>
+</html>
