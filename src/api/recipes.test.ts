@@ -94,6 +94,14 @@ describe('amount formatting', () => {
     expect(scaleUse(breakfastPuffs, { ref: 'milk', fraction: 1 / 3 }, 2).amount).toBe('⅔ cup');
   });
 
+  it('shows a range, and a step that uses part of it as an amount', () => {
+    const flour = { id: 'flour', section: 'Dough', quantity: 6, maxQuantity: 7.5, unit: 'cup', name: 'bread flour' };
+    expect(scaleIngredient(flour, { scale: 1 }).amount).toBe('6–7½ cups');
+    expect(scaleIngredient(flour, { scale: 0.5 }).amount).toBe('3–3¾ cups');
+    expect(scaleIngredient(flour, { scale: 1, quantity: 2 }).amount).toBe('2 cups');
+    expect(scaleIngredient(flour, { scale: 2, quantity: 4, maxQuantity: 5.5 }).amount).toBe('8–11 cups');
+  });
+
   it('formats clocks and timer lengths', () => {
     expect(formatClock(90)).toBe('1:30');
     expect(formatClock(3725)).toBe('1:02:05');
@@ -167,6 +175,7 @@ describe('voice commands', () => {
 describe('speech text', () => {
   it('reads fractions and temperatures naturally', () => {
     expect(forSpeech('1½ cups and ½ teaspoon at 350°F')).toBe('1 and 1/2 cups and 1/2 teaspoon at 350 degrees');
+    expect(forSpeech('6–7½ cups')).toBe('6 to 7 and 1/2 cups');
   });
 });
 
