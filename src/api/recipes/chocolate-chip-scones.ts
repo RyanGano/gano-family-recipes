@@ -142,4 +142,5 @@ export const chocolateChipScones: Recipe = {
     },
   ],
   notes: ['Keep leftovers in an airtight container for up to 2 days.'],
+  photos: [{ src: 'photos/chocolate-chip-scones-squares.jpg', caption: 'Cut into squares and ready to eat' }],
 };
