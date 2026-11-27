@@ -136,12 +136,13 @@ describe('recipe box card extras', () => {
 
   it('lists what to buy once each, scaled', () => {
     expect(buyList(orangeTwists, 1)).toEqual([
+      '1 package yeast',
       '½ cup orange juice',
       'Fresh oranges (for the grated rind)',
       'Almond flavoring',
       'Orange flavoring',
     ]);
-    expect(buyList(orangeTwists, 2)[0]).toBe('1 cup orange juice');
+    expect(buyList(orangeTwists, 2)[1]).toBe('1 cup orange juice');
     expect(buyList(breakfastPuffs, 1)).toEqual([]);
   });
 });

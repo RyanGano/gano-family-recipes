@@ -9,6 +9,8 @@ export const cinnamonRolls: Recipe = {
   yield: { amount: 16, unit: 'rolls' },
   prepMinutes: 45,
   cookMinutes: 12,
+  waitTime: { minutes: 105, label: 'rising' },
+  stamps: ['Frosting recipe not included'],
   sections: ['Dough', 'Filling', 'Frosting'],
   equipment: [
     'Microwave-safe measuring cup',
@@ -20,14 +22,14 @@ export const cinnamonRolls: Recipe = {
   ],
   ingredients: [
     { id: 'water', section: 'Dough', quantity: 0.5, unit: 'cup', name: 'warm water' },
-    { id: 'yeast', section: 'Dough', quantity: 2, unit: 'package', name: 'yeast' },
+    { id: 'yeast', section: 'Dough', quantity: 2, unit: 'package', name: 'yeast', buy: true },
     { id: 'yeast-sugar', section: 'Dough', quantity: 2, unit: 'tablespoon', name: 'sugar' },
     { id: 'sugar', section: 'Dough', quantity: 0.5, unit: 'cup', name: 'sugar' },
     { id: 'shortening', section: 'Dough', quantity: 0.5, unit: 'cup', name: 'shortening or butter' },
     { id: 'salt', section: 'Dough', quantity: 2, unit: 'teaspoon', name: 'salt' },
     { id: 'milk', section: 'Dough', quantity: 1.5, unit: 'cup', name: 'milk', note: 'warmed' },
     { id: 'eggs', section: 'Dough', quantity: 2, name: 'eggs', singular: 'egg' },
-    { id: 'flour', section: 'Dough', quantity: 6, unit: 'cup', name: 'bread flour' },
+    { id: 'flour', section: 'Dough', quantity: 6, unit: 'cup', name: 'bread flour', buy: 'Bread flour' },
     {
       id: 'extra-flour',
       section: 'Dough',
@@ -35,13 +37,14 @@ export const cinnamonRolls: Recipe = {
       unit: 'cup',
       name: 'more bread flour',
       note: 'as needed',
+      buy: 'Bread flour',
     },
     { id: 'board-flour', section: 'Dough', name: 'flour', note: 'for the board' },
     { id: 'fold-shortening', section: 'Filling', name: 'shortening', note: 'for folding' },
     { id: 'butter', section: 'Filling', name: 'butter', note: 'softened' },
     { id: 'brown-sugar', section: 'Filling', name: 'brown sugar' },
     { id: 'cinnamon', section: 'Filling', name: 'ground cinnamon' },
-    { id: 'frosting', section: 'Frosting', name: 'cream cheese frosting' },
+    { id: 'frosting', section: 'Frosting', name: 'cream cheese frosting', buy: 'Cream cheese frosting (or what you need to make it)' },
   ],
   steps: [
     {
