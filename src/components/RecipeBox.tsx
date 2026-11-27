@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { Recipe } from '../api/types';
-import { recipeStamps, timeLine } from '../lib/format';
+import { formatUnit, recipeStamps, timeLine } from '../lib/format';
 import { href } from '../lib/route';
 import { useRecipeList } from '../lib/useRecipes';
 import { BuyLink } from './BuyList';
@@ -75,7 +75,7 @@ export function RecipeBox() {
                   <span className="index-card__category">{r.category}</span>
                   <span className="index-card__title">{r.title}</span>
                   <span className="index-card__meta">
-                    Makes {r.yield.amount} {r.yield.unit}
+                    Makes {r.yield.amount} {formatUnit(r.yield.unit, r.yield.amount)}
                     {time ? ` · ${time}` : ''}
                     {r.from ? ` · from ${r.from}` : ''}
                   </span>

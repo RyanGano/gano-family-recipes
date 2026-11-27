@@ -1,0 +1,29 @@
+import type { Ingredient } from '../api/types';
+import { SCALES, scaleKey } from '../lib/prefs';
+import { href } from '../lib/route';
+import { writeStored } from '../lib/storage';
+
+/** The scale to open a linked recipe at: the scaled number of batches, when the scaler offers it. */
+export function linkedScale(ingredient: Ingredient, scale: number): number | undefined {
+  if (ingredient.unit !== 'batch' || ingredient.quantity === undefined) return undefined;
+  const batches = ingredient.quantity * scale;
+  return (SCALES as readonly number[]).includes(batches) ? batches : undefined;
+}
+
+/** "📖 Open the cream cheese frosting recipe" for an ingredient made from another recipe. */
+export function RecipeLink({ ingredient, scale, short = false }: { ingredient: Ingredient; scale: number; short?: boolean }) {
+  const slug = ingredient.recipe;
+  if (!slug) return null;
+  return (
+    <a
+      className={`recipe-link ${short ? 'recipe-link--short' : ''}`}
+      href={href({ kind: 'recipe', slug })}
+      onClick={() => {
+        const batches = linkedScale(ingredient, scale);
+        if (batches !== undefined) writeStored(scaleKey(slug), batches);
+      }}
+    >
+      <span aria-hidden>📖</span> {short ? 'See the recipe' : `Open the ${ingredient.name} recipe`}
+    </a>
+  );
+}

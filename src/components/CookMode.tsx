@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type TouchEvent } from 'react';
 import type { Recipe, Step } from '../api/types';
-import { formatTimerLength, nightBeforeNotice, scaleIngredient, scaleUse } from '../lib/format';
+import { findIngredient, formatTimerLength, nightBeforeNotice, scaleIngredient, scaleUse } from '../lib/format';
 import { toggle, useChecked, useLastStep, useScale, useTextSize } from '../lib/prefs';
 import { go, href } from '../lib/route';
 import { playBlip } from '../lib/sound';
@@ -12,6 +12,7 @@ import { speak, speechSupported, stopSpeaking, useVoiceCommands, type VoiceComma
 import { isVoiceProblem, VoiceHelp } from './VoiceHelp';
 import { Amount } from './Amount';
 import { GlossaryText } from './GlossaryText';
+import { RecipeLink } from './RecipeLink';
 import { ScalePicker } from './ScalePicker';
 import { TimerTray } from './TimerTray';
 import { WakeToggle } from './WakeToggle';
@@ -472,6 +473,15 @@ function StepScreen({
           })}
         </ul>
       ) : null}
+
+      {step.uses
+        ?.map((u) => findIngredient(recipe, u.ref))
+        .filter((ing) => ing.recipe)
+        .map((ing) => (
+          <p key={ing.id} className="cook-recipe-links">
+            <RecipeLink ingredient={ing} scale={scale} />
+          </p>
+        ))}
 
       <p className="cook-text">
         <GlossaryText key={step.id} text={step.text} />

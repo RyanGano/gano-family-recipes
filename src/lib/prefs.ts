@@ -2,8 +2,10 @@ import { parseNumber, parseStringArray, useStored } from './storage';
 
 export const SCALES = [0.5, 1, 2, 3] as const;
 
+export const scaleKey = (slug: string) => `scale.${slug}`;
+
 /** How many batches to make; remembered per recipe. */
-export const useScale = (slug: string) => useStored(`scale.${slug}`, parseNumber, 1);
+export const useScale = (slug: string) => useStored(scaleKey(slug), parseNumber, 1);
 
 /** Ingredients and checklist items ticked off; remembered per recipe until "start over". */
 export const useChecked = (slug: string) => useStored(`checked.${slug}`, parseStringArray, []);
